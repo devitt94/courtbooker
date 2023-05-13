@@ -32,7 +32,7 @@ format:
 
 ## Run tests
 test:
-	pytest --cov=src --cov-report xml --log-level=WARNING --disable-pytest-warnings
+	pytest --cov=scraper --cov-report xml --log-level=WARNING --disable-pytest-warnings
 
 ## Run checks (ruff + test)
 check:
@@ -46,7 +46,6 @@ lock-dependencies:
 
 ## Run api
 run:
-	./venv/bin/activate
 	python src/main.py
 
 

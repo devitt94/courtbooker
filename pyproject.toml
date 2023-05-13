@@ -7,7 +7,11 @@ name = "courtbooker"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+  "requests>=2.29.0",
+  "selenium>=4.9.1",
+  "geckodriver-autoinstaller>=0.1.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -28,7 +32,7 @@ exclude = [".env", ".venv", "venv", "notebooks"]
 show-source = true
 
 [tool.coverage.paths]
-source = ["src"]
+source = ["scraper"]
 
 [tool.coverage.run]
 branch = true
