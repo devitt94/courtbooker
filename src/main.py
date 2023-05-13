@@ -5,8 +5,6 @@ import scraper
 from config import config
 from email_sender import send_email
 
-LOOK_AHEAD_DAYS = 7
-
 
 def main():
     logging.basicConfig(
@@ -15,7 +13,7 @@ def main():
 
     today = datetime.datetime.today().date()
     date_range = [
-        today + datetime.timedelta(days=i) for i in range(LOOK_AHEAD_DAYS)
+        today + datetime.timedelta(days=i) for i in range(config["LOOK_AHEAD_DAYS"])
     ]
 
     logging.debug(

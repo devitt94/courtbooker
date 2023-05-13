@@ -95,7 +95,7 @@ def get_all_available_sessions(
     available_courts: list[CourtSession] = []
 
     with get_webdriver() as driver:
-        for venue, date in itertools.product(venues, date_range):
+        for date, venue in itertools.product(date_range, venues):
             venue_date_url = f"{config['BASE_URL']}/{venue}/Booking/BookByDate#?date={date:%Y-%m-%d}"
             logging.debug(f"Fetching {venue_date_url}")
             driver.get(venue_date_url)
@@ -106,6 +106,7 @@ def get_all_available_sessions(
                 court = Court(
                     label=court_element.get_attribute("data-resource-name"),
                     venue=venue,
+                    resource_id=court_element.get_attribute("data-resource-id"),
                 )
 
                 if court.ignore:
