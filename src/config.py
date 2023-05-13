@@ -1,16 +1,7 @@
-BASE_URL = "https://clubspark.lta.org.uk/"
+from dotenv import dotenv_values
 
-VENUES = {
-    "ClissoldParkHackney": {
-        "courts": 8,
-    },
-    "HackneyDowns": {
-        "courts": 4,
-    },
-    "LondonFieldsPark" : {
-        "courts": 2,
-    },
-    "AskeGardens": {
-        "courts":1,
-    },
-}
+__list_vars = ["VENUES", "RECEIVER_EMAILS"]
+
+config = dotenv_values(".env")
+for key in __list_vars:
+    config[key] = config[key].split(",")
