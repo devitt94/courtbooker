@@ -41,7 +41,7 @@ class CourtSession:
     @property
     def is_weekday(self) -> bool:
         return self.start_time.weekday() not in (5, 6)
-    
+
     @property
     def booking_url(self) -> str:
         return f"{config['BASE_URL']}/{self.court.venue}/Booking/BookByDate#?date={self.start_time:%Y-%m-%d}&resourceId={self.court.resource_id}"
@@ -56,5 +56,5 @@ class CourtSession:
             "Date": f"{self.start_time:%A %d %B}",
             "Time": f"{self.start_time:%H:%M}",
             "Cost": f"£{self.cost:.2f}",
-            "Booking Link": f"<a href=\"{self.booking_url}\">Link to book</a>",
+            "Booking Link": f'<a href="{self.booking_url}">Link to book</a>',
         }

@@ -8,7 +8,9 @@ from models import CourtSession
 
 SUBJECT = "Hackney Tennis Court Availability"
 
-TABLE_ATTRIBUTES = 'style="width: 100%; border: none; font-size: 14px; text-align: left;"'
+TABLE_ATTRIBUTES = (
+    'style="width: 100%; border: none; font-size: 14px; text-align: left;"'
+)
 
 
 def send_email(sessions: list[CourtSession]):
@@ -17,7 +19,7 @@ def send_email(sessions: list[CourtSession]):
         escape=False,
         table_attributes=TABLE_ATTRIBUTES,
     )
-    
+
     sender_email = config["SENDER_EMAIL"]
 
     message = MIMEMultipart()

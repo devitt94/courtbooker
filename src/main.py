@@ -13,7 +13,8 @@ def main():
 
     today = datetime.datetime.today().date()
     date_range = [
-        today + datetime.timedelta(days=i) for i in range(config["LOOK_AHEAD_DAYS"])
+        today + datetime.timedelta(days=i)
+        for i in range(config["LOOK_AHEAD_DAYS"])
     ]
 
     logging.debug(

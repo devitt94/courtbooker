@@ -108,7 +108,9 @@ def get_all_available_sessions(
                 court = Court(
                     label=court_element.get_attribute("data-resource-name"),
                     venue=venue,
-                    resource_id=court_element.get_attribute("data-resource-id"),
+                    resource_id=court_element.get_attribute(
+                        "data-resource-id"
+                    ),
                 )
 
                 if court.ignore:
