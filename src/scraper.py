@@ -18,8 +18,10 @@ PAGE_WAIT_SECONDS = 3
 def get_webdriver() -> webdriver.Firefox:
     try:
         logging.debug("Initiliasing Firefox webdriver")
+        options = webdriver.FirefoxOptions()
+        options.headless = True
         geckodriver_autoinstaller.install()
-        driver = webdriver.Firefox()
+        driver = webdriver.Firefox(options=options)
         yield driver
     except Exception as e:
         logging.exception(e)
