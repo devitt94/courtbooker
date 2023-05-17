@@ -44,10 +44,13 @@ lock-dependencies:
 	pip-compile --generate-hashes --output-file=requirements.txt pyproject.toml
 	pip-compile --generate-hashes --extra=dev --output-file=requirements-dev.txt pyproject.toml
 
+## Build docker image
+build:
+	docker build -t courtbooker:latest .
+
 ## Run api
 run:
-	python src/main.py
-
+	docker run --env-file .env courtbooker:latest
 
 #################################################################################
 # Self Documenting Commands                                                     #

@@ -17,9 +17,6 @@ def send_email(sessions: list[CourtSession]):
         escape=False,
         table_attributes=TABLE_ATTRIBUTES,
     )
-
-    with open("email_template.html", "w") as f:
-        f.write(available_courts_table)
     
     sender_email = config["SENDER_EMAIL"]
 
