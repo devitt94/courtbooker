@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-import scraper
+import scraper.clubspark as clubspark
 from config import config
 from email_sender import send_email
 
@@ -21,7 +21,7 @@ def main():
         f"Checking availability for {date_range[0]:%A %d %B} to {date_range[-1]:%A %d %B}"
     )
 
-    available_courts = scraper.get_all_available_sessions(
+    available_courts = clubspark.get_all_available_sessions(
         config["VENUES"], date_range
     )
 

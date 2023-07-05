@@ -2,32 +2,18 @@ import datetime
 import itertools
 import logging
 import time
-from contextlib import contextmanager
 
-import geckodriver_autoinstaller
 from config import config
 from models import Court, CourtSession
-from selenium import webdriver
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+
+from scraper.common import get_webdriver
 
 PAGE_WAIT_SECONDS = 3
 
-
-@contextmanager
-def get_webdriver() -> webdriver.Firefox:
-    try:
-        logging.debug("Initiliasing Firefox webdriver")
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        geckodriver_autoinstaller.install()
-        driver = webdriver.Firefox(options=options)
-        yield driver
-    except Exception as e:
-        logging.exception(e)
-    finally:
-        logging.debug("Closing driver")
-        driver.quit()
 
 
 def _get_dt_from_mins_and_date(
@@ -40,7 +26,7 @@ def _get_dt_from_mins_and_date(
 
 
 def get_court_availability(
-    court_element: webdriver.remote.webelement.WebElement,
+    court_element: WebElement,
     court: Court,
     date: datetime.date,
 ) -> list[CourtSession]:
