@@ -14,8 +14,17 @@ TABLE_ATTRIBUTES = (
 
 
 def send_email(sessions: list[CourtSession]):
-    available_courts_table = json2html.convert(
-        json=[session.prettify() for session in sessions],
+    peak_sessions = filter(lambda s: s.is_peak_time, sessions)
+    non_peak_sessions = filter(lambda s: not s.is_peak_time, sessions)
+
+    peak_sessions_table = json2html.convert(
+        json=[session.prettify() for session in peak_sessions],
+        escape=False,
+        table_attributes=TABLE_ATTRIBUTES,
+    )
+
+    non_peak_sessions_table = json2html.convert(
+        json=[session.prettify() for session in non_peak_sessions],
         escape=False,
         table_attributes=TABLE_ATTRIBUTES,
     )
@@ -26,8 +35,10 @@ def send_email(sessions: list[CourtSession]):
     message["From"] = sender_email
     message["To"] = ", ".join(config["RECEIVER_EMAILS"])
     message["Subject"] = SUBJECT
-    message.attach(MIMEText("Available courts:", "plain"))
-    message.attach(MIMEText(available_courts_table, "html"))
+    message.attach(MIMEText("Peak-time available courts:", "plain"))
+    message.attach(MIMEText(peak_sessions_table, "html"))
+    message.attach(MIMEText("Non peak-time available courts:", "plain"))
+    message.attach(MIMEText(non_peak_sessions_table, "html"))
 
     with smtplib.SMTP(config["SMTP_SERVER"], config["SMTP_PORT"]) as smtp:
         smtp.starttls()
