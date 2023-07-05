@@ -1,9 +1,8 @@
 import logging
-
-from selenium import webdriver
 from contextlib import contextmanager
 
 import geckodriver_autoinstaller
+from selenium import webdriver
 
 
 @contextmanager
@@ -20,4 +19,3 @@ def get_webdriver() -> webdriver.Firefox:
     finally:
         logging.debug("Closing driver")
         driver.quit()
-

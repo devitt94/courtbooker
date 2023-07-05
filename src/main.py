@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+import scraper.better as better
 import scraper.clubspark as clubspark
 from config import config
 from email_sender import send_email
@@ -21,9 +22,15 @@ def main():
         f"Checking availability for {date_range[0]:%A %d %B} to {date_range[-1]:%A %d %B}"
     )
 
-    available_courts = clubspark.get_all_available_sessions(
-        config["VENUES"], date_range
+    better_courts = better.get_all_available_sessions(
+        config["BETTER_VENUES"], date_range
     )
+
+    clubspark_courts = clubspark.get_all_available_sessions(
+        config["CLUBSPARK_VENUES"], date_range
+    )
+
+    available_courts = clubspark_courts + better_courts
 
     logging.info(f"Found {len(available_courts)} available courts")
 

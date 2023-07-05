@@ -4,16 +4,13 @@ import logging
 import time
 
 from config import config
-from models import Court, CourtSession
-
+from models import ClubsparkCourtSession, Court
+from scraper.common import get_webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from scraper.common import get_webdriver
-
 PAGE_WAIT_SECONDS = 3
-
 
 
 def _get_dt_from_mins_and_date(
@@ -29,7 +26,7 @@ def get_court_availability(
     court_element: WebElement,
     court: Court,
     date: datetime.date,
-) -> list[CourtSession]:
+) -> list[ClubsparkCourtSession]:
     available_sessions = []
 
     sessions = court_element.find_elements(
@@ -62,16 +59,15 @@ def get_court_availability(
                     date,
                 )
 
-                session = CourtSession(
+                session = ClubsparkCourtSession(
                     cost=cost,
                     start_time=start_dt,
                     end_time=end_dt,
                     court=court,
                 )
 
-                if session.is_peak_time:
-                    logging.info(f"Found peak time session: {session}")
-                    available_sessions.append(session)
+                logging.info(f"Found available court: {session}")
+                available_sessions.append(session)
 
     return available_sessions
 
@@ -79,12 +75,12 @@ def get_court_availability(
 def get_all_available_sessions(
     venues: list[str],
     date_range: list[datetime.date],
-) -> list[CourtSession]:
-    available_courts: list[CourtSession] = []
+) -> list[ClubsparkCourtSession]:
+    available_courts: list[ClubsparkCourtSession] = []
 
     with get_webdriver() as driver:
         for date, venue in itertools.product(date_range, venues):
-            venue_date_url = f"{config['BASE_URL']}/{venue}/Booking/BookByDate#?date={date:%Y-%m-%d}"
+            venue_date_url = f"{config['CLUBSPARK_BASE_URL']}/{venue}/Booking/BookByDate#?date={date:%Y-%m-%d}"
             logging.debug(f"Fetching {venue_date_url}")
             driver.get(venue_date_url)
             time.sleep(PAGE_WAIT_SECONDS)

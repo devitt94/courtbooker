@@ -1,0 +1,151 @@
+import datetime
+import itertools
+import logging
+import time
+from itertools import islice
+from typing import Iterable
+
+import lxml.html as lxhtml
+import lxml.html.clean as clean
+from config import config
+from models import BetterCourtSession, Court
+from scraper.common import get_webdriver
+
+BEFORE_AVAILABILITY_TABLE_STRING = "browse by location"
+AFTER_AVAILABILITY_TABLE_STRING = "shopping basket"
+NUM_COLUMNS = 6
+PAGE_WAIT_SECONDS = 4
+
+
+def parse_start_end_time(value: str) -> tuple[int, int]:
+    start_time, end_time = value.split("-")
+    start_time = int(start_time.strip()[:2])
+    end_time = int(end_time.strip()[:2])
+
+    return start_time, end_time
+
+
+def parse_cost(value: str) -> float:
+    return float(value.strip().lstrip("£"))
+
+
+def parse_availability(value: str) -> int:
+    return int(value.split()[0].strip())
+
+
+def batched(iterable: Iterable, n: int):
+    "Batch data into tuples of length n. The last batch may be shorter."
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError("n must be at least one")
+    it = iter(iterable)
+    while batch := tuple(islice(it, n)):
+        yield batch
+
+
+def extract_lines_from_page_source(page_source: str) -> list[str]:
+    """Extracts visible text from page source as list of strings"""
+
+    ignore_tags = {"script", "noscript", "style"}
+
+    cleaner = clean.Cleaner()
+    content = cleaner.clean_html(page_source)
+
+    doc = lxhtml.fromstring(content)
+
+    reached_availability_table = False
+    all_lines = []
+
+    for elt in doc.iterdescendants():
+        if elt.tag in ignore_tags:
+            continue
+        text = elt.text or ""
+        tail = elt.tail or ""
+        s = " ".join((text, tail)).strip()
+        if s:
+            if not reached_availability_table:
+                if s.lower() == BEFORE_AVAILABILITY_TABLE_STRING:
+                    reached_availability_table = True
+
+            elif s.lower() == AFTER_AVAILABILITY_TABLE_STRING:
+                break
+            else:
+                all_lines.append(s)
+
+    return all_lines
+
+
+def create_court_session(
+    start_end_time: tuple[int, int],
+    cost: float,
+    venue: str,
+    date: datetime.date,
+    **kwargs,
+) -> BetterCourtSession:
+    start_hour, end_hour = start_end_time
+    start_time = datetime.datetime.combine(
+        date, datetime.time(hour=start_hour)
+    )
+    end_time = datetime.datetime.combine(date, datetime.time(hour=end_hour))
+
+    return BetterCourtSession(
+        cost=cost,
+        start_time=start_time,
+        end_time=end_time,
+        court=Court(venue=venue),
+    )
+
+
+def get_all_available_sessions(
+    venues: list[str],
+    date_range: list[datetime.date],
+) -> list[BetterCourtSession]:
+    COLUMN_MAPPERS = [
+        (0, "start_end_time", parse_start_end_time),
+        (4, "cost", parse_cost),
+        (5, "availability", parse_availability),
+    ]
+
+    available_courts: list[BetterCourtSession] = []
+
+    with get_webdriver() as browser:
+        for date, venue in itertools.product(date_range, venues):
+            url = (
+                f"{config['BETTER_BASE_URL']}/{venue}/{date:%Y-%m-%d}/by-time"
+            )
+
+            logging.debug(f"Getting booking page {url=}")
+            browser.get(url)
+            time.sleep(PAGE_WAIT_SECONDS)
+
+            logging.debug("Extracting page source")
+            lines = extract_lines_from_page_source(browser.page_source)
+            if len(lines) < NUM_COLUMNS:
+                logging.debug(
+                    f"No valid session lines found for {venue=} {date=}"
+                )
+                continue
+
+            for batch in batched(lines, NUM_COLUMNS):
+                court = {}
+                for column, key, mapper in COLUMN_MAPPERS:
+                    value = batch[column]
+                    try:
+                        value = mapper(value)
+                    except Exception as e:
+                        logging.error(
+                            f"Failed to parse value {value} for {key} ({batch=})"
+                        )
+                        raise e
+
+                    court[key] = value
+
+                if court["availability"] > 0:
+                    court_session = create_court_session(
+                        date=date, venue=venue, **court
+                    )
+
+                    logging.info(f"Found available court: {court_session}")
+                    available_courts.append(court_session)
+
+    return available_courts
