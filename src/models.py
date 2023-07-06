@@ -40,9 +40,17 @@ class CourtSession:
         else:
             return self.start_time.hour >= 9
 
+    @abstractmethod
+    def get_booking_url(self) -> str:
+        pass
+
     @property
     def is_weekday(self) -> bool:
         return self.start_time.weekday() not in (5, 6)
+
+    @property
+    def venue_display_name(self) -> str:
+        return self.court.venue
 
     def __str__(self):
         return f"{self.venue_display_name} {self.court.label} at {self.start_time:%H:%M} on {self.start_time:%A %d %B} (£{self.cost:.2f})"
@@ -57,13 +65,20 @@ class CourtSession:
             "Booking Link": f'<a href="{self.get_booking_url()}">Link to book</a>',
         }
 
-    @abstractmethod
-    def get_booking_url(self) -> str:
-        pass
+    def __lt__(self, other):
+        if self.start_time < other.start_time:
+            return True
+        elif self.start_time == other.start_time:
+            return self.venue_display_name < other.venue_display_name
+        else:
+            return False
 
-    @property
-    def venue_display_name(self) -> str:
-        return self.court.venue
+    def __eq__(self, other):
+        return (
+            self.start_time == other.start_time
+            and self.venue_display_name == other.venue_display_name
+            and self.court.label == other.court.label
+        )
 
 
 class ClubsparkCourtSession(CourtSession):
