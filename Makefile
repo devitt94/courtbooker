@@ -21,6 +21,12 @@ clean:
 	rm -rf build
 	rm -rf dist
 
+## Get project version
+# grep the version from pyproject.toml, squeeze multiple spaces, delete double
+#   and single quotes, get 3rd val. This command tolerates 
+#   multiple whitespace sequences around the version number
+VERSION := $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+
 ## Lint using ruff
 ruff:
 	ruff .
@@ -46,7 +52,12 @@ lock-dependencies:
 
 ## Build docker image
 build:
-	docker build -t courtbooker:latest .
+	docker build -t courtbooker:$(VERSION) .
+	docker tag courtbooker:$(VERSION) courtbooker:latest
+
+## Test run
+test-run:
+	docker run --env-file .env.test courtbooker:latest
 
 ## Run api
 run:

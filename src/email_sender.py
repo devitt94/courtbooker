@@ -13,7 +13,7 @@ TABLE_ATTRIBUTES = (
 )
 
 
-def send_email(sessions: list[CourtSession]):
+def prepare_success_email_body(sessions: list[CourtSession]) -> MIMEMultipart:
     peak_sessions = filter(lambda s: s.is_peak_time, sessions)
     non_peak_sessions = filter(lambda s: not s.is_peak_time, sessions)
 
@@ -29,18 +29,39 @@ def send_email(sessions: list[CourtSession]):
         table_attributes=TABLE_ATTRIBUTES,
     )
 
-    sender_email = config["SENDER_EMAIL"]
-
     message = MIMEMultipart()
-    message["From"] = sender_email
+
+    message["From"] = config["SENDER_EMAIL"]
     message["To"] = ", ".join(config["RECEIVER_EMAILS"])
     message["Subject"] = SUBJECT
-    message.attach(MIMEText("Peak-time available courts:", "plain"))
+    message.attach(MIMEText("<h3>Peak-time available courts:</h3>", "html"))
     message.attach(MIMEText(peak_sessions_table, "html"))
-    message.attach(MIMEText("Non peak-time available courts:", "plain"))
+    message.attach(
+        MIMEText("<h3>Non peak-time available courts:</h3>", "html")
+    )
     message.attach(MIMEText(non_peak_sessions_table, "html"))
 
+    return message
+
+
+def prepare_failure_email_body(e: Exception) -> MIMEMultipart:
+    message = MIMEMultipart()
+
+    message["From"] = config["SENDER_EMAIL"]
+    message["To"] = config["SENDER_EMAIL"]
+    message["Subject"] = f"{SUBJECT} - Failed"
+    message.attach(
+        MIMEText(
+            f"Failed to get available courts due to the following exception:\n{e}",
+            "plain",
+        )
+    )
+
+    return message
+
+
+def send_email(message: MIMEMultipart):
     with smtplib.SMTP(config["SMTP_SERVER"], config["SMTP_PORT"]) as smtp:
         smtp.starttls()
-        smtp.login(sender_email, config["SENDER_EMAIL_PASSWORD"])
+        smtp.login(config["SENDER_EMAIL"], config["SENDER_EMAIL_PASSWORD"])
         smtp.send_message(message)
