@@ -1,9 +1,8 @@
 import pytest
-
 from scraper.better import (
+    parse_availability,
     parse_cost,
     parse_start_end_time,
-    parse_availability,
 )
 
 
@@ -45,4 +44,3 @@ def test_parse_start_end_time(input, expected):
 )
 def test_parse_availability(input, expected):
     assert parse_availability(input) == expected
-
