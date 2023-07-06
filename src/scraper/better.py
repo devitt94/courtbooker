@@ -26,11 +26,15 @@ def parse_start_end_time(value: str) -> tuple[int, int]:
 
 
 def parse_cost(value: str) -> float:
-    return float(value.strip().lstrip("£"))
+    return round(float(value.strip().lstrip("£")), 2)
 
 
 def parse_availability(value: str) -> int:
-    return int(value.split()[0].strip())
+    try:
+        num_available = int(value.split()[0].strip())
+    except ValueError:
+        num_available = 0
+    return num_available
 
 
 def batched(iterable: Iterable, n: int):
