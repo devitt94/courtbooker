@@ -3,36 +3,40 @@ import logging
 
 import scraper.better as better
 import scraper.clubspark as clubspark
-from config import config
 from email_sender import (
     prepare_failure_email_body,
     prepare_success_email_body,
     send_email,
 )
+from settings import settings
 
 
 def main():
+    log_level = logging.DEBUG if settings.DEBUG else logging.INFO
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+        level=log_level, format="%(asctime)s - %(levelname)s - %(message)s"
     )
+
+    logging.info(f"Running in debug mode: {settings.DEBUG=}")
 
     today = datetime.datetime.today().date()
-    date_range = [
+    club_spark_date_range = [
         today + datetime.timedelta(days=i)
-        for i in range(config["LOOK_AHEAD_DAYS"])
+        for i in range(settings.CLUBSPARK.LOOK_AHEAD_DAYS)
     ]
 
-    logging.debug(
-        f"Checking availability for {date_range[0]:%A %d %B} to {date_range[-1]:%A %d %B}"
-    )
+    better_date_range = [
+        today + datetime.timedelta(days=i)
+        for i in range(settings.BETTER.LOOK_AHEAD_DAYS)
+    ]
 
     try:
         better_courts = better.get_all_available_sessions(
-            config["BETTER_VENUES"], date_range
+            settings.BETTER.VENUES, better_date_range
         )
 
         clubspark_courts = clubspark.get_all_available_sessions(
-            config["CLUBSPARK_VENUES"], date_range
+            settings.CLUBSPARK.VENUES, club_spark_date_range
         )
 
         available_courts = sorted(clubspark_courts + better_courts)
