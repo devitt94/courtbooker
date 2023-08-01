@@ -7,9 +7,9 @@ from typing import Iterable
 
 import lxml.html as lxhtml
 import lxml.html.clean as clean
-from config import config
 from models import BetterCourtSession, Court
 from scraper.common import get_webdriver
+from settings import settings
 
 BEFORE_AVAILABILITY_TABLE_STRING = "browse by location"
 AFTER_AVAILABILITY_TABLE_STRING = "shopping basket"
@@ -114,9 +114,7 @@ def get_all_available_sessions(
 
     with get_webdriver() as browser:
         for date, venue in itertools.product(date_range, venues):
-            url = (
-                f"{config['BETTER_BASE_URL']}/{venue}/{date:%Y-%m-%d}/by-time"
-            )
+            url = f"{settings.BETTER.BASE_URL}/{venue}/{date:%Y-%m-%d}/by-time"
 
             logging.debug(f"Getting booking page {url=}")
             browser.get(url)

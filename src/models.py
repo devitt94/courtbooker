@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
-from config import config
+from settings import settings
 
 
 @dataclass
@@ -83,12 +83,12 @@ class CourtSession:
 
 class ClubsparkCourtSession(CourtSession):
     def get_booking_url(self) -> str:
-        return f"{config['CLUBSPARK_BASE_URL']}/{self.court.venue}/Booking/BookByDate#?date={self.start_time:%Y-%m-%d}"
+        return f"{settings.CLUBSPARK.BASE_URL}/{self.court.venue}/Booking/BookByDate#?date={self.start_time:%Y-%m-%d}"
 
 
 class BetterCourtSession(CourtSession):
     def get_booking_url(self) -> str:
-        return f"{config['BETTER_BASE_URL']}/{self.court.venue}/{self.start_time:%Y-%m-%d}/by-time"
+        return f"{settings.BETTER.BASE_URL}/{self.court.venue}/{self.start_time:%Y-%m-%d}/by-time"
 
     @property
     def venue_display_name(self) -> str:

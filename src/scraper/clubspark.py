@@ -3,12 +3,12 @@ import itertools
 import logging
 import time
 
-from config import config
 from models import ClubsparkCourtSession, Court
 from scraper.common import get_webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from settings import settings
 
 PAGE_WAIT_SECONDS = 3
 
@@ -80,7 +80,7 @@ def get_all_available_sessions(
 
     with get_webdriver() as driver:
         for date, venue in itertools.product(date_range, venues):
-            venue_date_url = f"{config['CLUBSPARK_BASE_URL']}/{venue}/Booking/BookByDate#?date={date:%Y-%m-%d}"
+            venue_date_url = f"{settings.CLUBSPARK.BASE_URL}/{venue}/Booking/BookByDate#?date={date:%Y-%m-%d}"
             logging.debug(f"Fetching {venue_date_url}")
             driver.get(venue_date_url)
             time.sleep(PAGE_WAIT_SECONDS)
