@@ -11,5 +11,4 @@ RUN pip install --upgrade pip && pip install --require-hashes --no-deps -r requi
 
 COPY src/ .
 
-ENTRYPOINT [ "python", "main.py" ]
 
