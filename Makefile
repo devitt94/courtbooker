@@ -57,7 +57,7 @@ build:
 
 ## Test run
 test-run:
-	docker run --env-file .env.test courtbooker:latest
+	docker run --entrypoint python --env-file .env.test courtbooker:latest main.py
 
 ## Run api
 run:

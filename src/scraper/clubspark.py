@@ -4,11 +4,12 @@ import logging
 import time
 
 from models import ClubsparkCourtSession, Court
-from scraper.common import get_webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from settings import settings
+
+from scraper.common import get_webdriver
 
 PAGE_WAIT_SECONDS = 3
 

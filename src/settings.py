@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from pydantic import BaseModel, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,6 +13,9 @@ class DataSourceSettings(BaseModel):
     @validator("VENUES", pre=True)
     def validate(cls, val):
         return json.loads(val)
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
 
 class Settings(BaseSettings):
@@ -29,6 +33,15 @@ class Settings(BaseSettings):
 
     CLUBSPARK: DataSourceSettings
     BETTER: DataSourceSettings
+
+    DATA_DIR: Path = "data"
+
+    @property
+    def data_sources(self) -> list[DataSourceSettings]:
+        return {
+            "better": self.BETTER,
+            "clubspark": self.CLUBSPARK,
+        }
 
 
 settings = Settings()

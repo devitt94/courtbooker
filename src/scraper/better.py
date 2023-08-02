@@ -8,8 +8,9 @@ from typing import Iterable
 import lxml.html as lxhtml
 import lxml.html.clean as clean
 from models import BetterCourtSession, Court
-from scraper.common import get_webdriver
 from settings import settings
+
+from scraper.common import get_webdriver
 
 BEFORE_AVAILABILITY_TABLE_STRING = "browse by location"
 AFTER_AVAILABILITY_TABLE_STRING = "shopping basket"

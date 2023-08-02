@@ -31,6 +31,7 @@ class CourtSession:
             "cost": self.cost,
             "start_time": self.start_time.isoformat(),
             "end_time": self.end_time.isoformat(),
+            "link": self.get_booking_url(),
         }
 
     @property
