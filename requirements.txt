@@ -4,10 +4,6 @@
 #
 #    pip-compile --generate-hashes --output-file=requirements.txt pyproject.toml
 #
-aiofiles==23.1.0 \
-    --hash=sha256:9312414ae06472eb6f1d163f555e466a23aed1c8f60c30cccf7121dba2e53eb2 \
-    --hash=sha256:edd247df9a19e0db16534d4baaf536d6609a43e1de5401d7a4c1c148753a1635
-    # via courtbooker (pyproject.toml)
 amqp==5.1.1 \
     --hash=sha256:2c1b13fecc0893e946c65cbd5f36427861cffa4ea2201d8f6fca22e2a373b5e2 \
     --hash=sha256:6f0956d2c23d8fa6e7691934d8c3930eadb44972cbbd1a7ae3a520f735d43359
@@ -19,9 +15,7 @@ annotated-types==0.5.0 \
 anyio==3.7.1 \
     --hash=sha256:44a3c9aba0f5defa43261a8b3efb97891f2bd7d804e0e1f56419befa1adfc780 \
     --hash=sha256:91dee416e570e92c64041bd18b900d1d6fa78dff7048769ce5ac5ddad004fbb5
-    # via
-    #   httpcore
-    #   starlette
+    # via starlette
 async-generator==1.10 \
     --hash=sha256:01c7bf666359b4967d2cda0000cc2e4af16a0ae098cbffcb8472fb9e8ad6585b \
     --hash=sha256:6ebb3d106c12920aaae42ccb6f787ef5eefdcdd166ea3d628fa8476abe712144
@@ -43,15 +37,11 @@ billiard==4.1.0 \
 celery==5.3.1 \
     --hash=sha256:27f8f3f3b58de6e0ab4f174791383bbd7445aff0471a43e99cfd77727940753f \
     --hash=sha256:f84d1c21a1520c116c2b7d26593926581191435a03aa74b77c941b93ca1c6210
-    # via
-    #   courtbooker (pyproject.toml)
-    #   flower
+    # via courtbooker (pyproject.toml)
 certifi==2022.12.7 \
     --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
     --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
     # via
-    #   httpcore
-    #   httpx
     #   requests
     #   selenium
 charset-normalizer==3.1.0 \
@@ -163,10 +153,6 @@ fastapi==0.100.1 \
     --hash=sha256:522700d7a469e4a973d92321ab93312448fbe20fca9c8da97effc7e7bc56df23 \
     --hash=sha256:ec6dd52bfc4eff3063cfcd0713b43c87640fefb2687bbbe3d8a08d94049cdf32
     # via courtbooker (pyproject.toml)
-flower==2.0.0 \
-    --hash=sha256:5657785d728a54914256c34fd0551fe2d7152aab08062ebc645bf86b97b8aec5 \
-    --hash=sha256:571f9ed1c57a622e862de35eceb8a4244f023fbcfb7175f53e45ebe679f46d90
-    # via courtbooker (pyproject.toml)
 geckodriver-autoinstaller==0.1.0 \
     --hash=sha256:08953404903750a7e0905913d86eab13849c75ed61eb281c45697d9f5b5e2eb2 \
     --hash=sha256:609236aab9c111af10685cab1ab5551ce86b471101b6add34642545bc7e84bdc
@@ -175,27 +161,13 @@ h11==0.14.0 \
     --hash=sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d \
     --hash=sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761
     # via
-    #   httpcore
     #   uvicorn
     #   wsproto
-httpcore==0.17.3 \
-    --hash=sha256:a6f30213335e34c1ade7be6ec7c47f19f50c56db36abef1a9dfa3815b1cb3888 \
-    --hash=sha256:c2789b767ddddfa2a5782e3199b2b7f6894540b17b16ec26b2c4d8e103510b87
-    # via httpx
-httpx==0.24.1 \
-    --hash=sha256:06781eb9ac53cde990577af654bd990a4949de37a28bdb4a230d434f3a30b9bd \
-    --hash=sha256:5853a43053df830c20f8110c5e69fe44d035d850b2dfe795e196f00fdb774bdd
-    # via courtbooker (pyproject.toml)
-humanize==4.7.0 \
-    --hash=sha256:7ca0e43e870981fa684acb5b062deb307218193bca1a01f2b2676479df849b3a \
-    --hash=sha256:df7c429c2d27372b249d3f26eb53b07b166b661326e0325793e0a988082e3889
-    # via flower
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
     # via
     #   anyio
-    #   httpx
     #   requests
     #   trio
 json2html==1.3.0 \
@@ -288,10 +260,6 @@ outcome==1.2.0 \
     --hash=sha256:6f82bd3de45da303cf1f771ecafa1633750a358436a8bb60e06a1ceb745d2672 \
     --hash=sha256:c4ab89a56575d6d38a05aa16daeaa333109c1f96167aba8901ab18b6b5e0f7f5
     # via trio
-prometheus-client==0.17.1 \
-    --hash=sha256:21e674f39831ae3f8acde238afd9a27a37d0d2fb5a28ea094f0ce25d2cbf2091 \
-    --hash=sha256:e537f37160f6807b8202a6fc4764cdd19bac5480ddd3e0d463c3002b34462101
-    # via flower
 prompt-toolkit==3.0.39 \
     --hash=sha256:04505ade687dc26dc4284b1ad19a83be2f2afe83e7a828ace0c72f3a1df72aac \
     --hash=sha256:9dffbe1d8acf91e3de75f3b544e4842382fc06c6babe903ac9acb74dc6e08d88
@@ -422,10 +390,6 @@ python-dotenv==1.0.0 \
     --hash=sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba \
     --hash=sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a
     # via pydantic-settings
-pytz==2023.3 \
-    --hash=sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588 \
-    --hash=sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb
-    # via flower
 redis==4.6.0 \
     --hash=sha256:585dc516b9eb042a619ef0a39c3d7d55fe81bdb4df09a52c9cdde0d07bf1aa7d \
     --hash=sha256:e2b03db868160ee4591de3cb90d40ebb50a90dd302138775937f6a42b7ed183c
@@ -447,8 +411,6 @@ sniffio==1.3.0 \
     --hash=sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384
     # via
     #   anyio
-    #   httpcore
-    #   httpx
     #   trio
 sortedcontainers==2.4.0 \
     --hash=sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88 \
@@ -458,19 +420,6 @@ starlette==0.27.0 \
     --hash=sha256:6a6b0d042acb8d469a01eba54e9cda6cbd24ac602c4cd016723117d6a7e73b75 \
     --hash=sha256:918416370e846586541235ccd38a474c08b80443ed31c578a418e2209b3eef91
     # via fastapi
-tornado==6.3.2 \
-    --hash=sha256:05615096845cf50a895026f749195bf0b10b8909f9be672f50b0fe69cba368e4 \
-    --hash=sha256:0c325e66c8123c606eea33084976c832aa4e766b7dff8aedd7587ea44a604cdf \
-    --hash=sha256:29e71c847a35f6e10ca3b5c2990a52ce38b233019d8e858b755ea6ce4dcdd19d \
-    --hash=sha256:4b927c4f19b71e627b13f3db2324e4ae660527143f9e1f2e2fb404f3a187e2ba \
-    --hash=sha256:5b17b1cf5f8354efa3d37c6e28fdfd9c1c1e5122f2cb56dac121ac61baa47cbe \
-    --hash=sha256:6a0848f1aea0d196a7c4f6772197cbe2abc4266f836b0aac76947872cd29b411 \
-    --hash=sha256:7efcbcc30b7c654eb6a8c9c9da787a851c18f8ccd4a5a3a95b05c7accfa068d2 \
-    --hash=sha256:834ae7540ad3a83199a8da8f9f2d383e3c3d5130a328889e4cc991acc81e87a0 \
-    --hash=sha256:b46a6ab20f5c7c1cb949c72c1994a4585d2eaa0be4853f50a03b5031e964fc7c \
-    --hash=sha256:c2de14066c4a38b4ecbbcd55c5cc4b5340eb04f1c5e81da7451ef555859c833f \
-    --hash=sha256:c367ab6c0393d71171123ca5515c61ff62fe09024fa6bf299cd1339dc9456829
-    # via flower
 trio==0.22.0 \
     --hash=sha256:ce68f1c5400a47b137c5a4de72c7c901bd4e7a24fbdebfe9b41de8c6c04eaacf \
     --hash=sha256:f1dd0780a89bfc880c7c7994519cb53f62aacb2c25ff487001c0052bd721cdf0

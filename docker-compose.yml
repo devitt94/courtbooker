@@ -10,4 +10,26 @@ services:
     volumes:
       - ./project:/usr/src/app
     env_file:
-      - .env
+      - .env.test
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+  
+  worker:
+    build: .
+    command: celery -A worker.celery worker --loglevel=info
+    volumes:
+      - ./project:/usr/src/app
+    env_file:
+      - .env.test
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - web
+
+  redis:
+    image: redis:7

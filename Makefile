@@ -61,7 +61,7 @@ test-run:
 
 ## Run api
 run:
-	docker run --env-file .env courtbooker:latest
+	docker run --entrypoint python --env-file .env courtbooker:latest main.py
 
 #################################################################################
 # Self Documenting Commands                                                     #
