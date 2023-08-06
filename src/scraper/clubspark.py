@@ -2,8 +2,10 @@ import datetime
 import itertools
 import logging
 import time
+from decimal import Decimal
 
-from schemas import ClubsparkAvailableCourt, Court
+import models
+import schemas
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -25,9 +27,10 @@ def _get_dt_from_mins_and_date(
 
 def get_court_availability(
     court_element: WebElement,
-    court: Court,
+    court: schemas.Court,
     date: datetime.date,
-) -> list[ClubsparkAvailableCourt]:
+    url: str,
+) -> list[models.CourtSession]:
     available_sessions = []
 
     sessions = court_element.find_elements(
@@ -36,7 +39,7 @@ def get_court_availability(
 
     for session in sessions:
         try:
-            cost = float(session.get_attribute("data-session-cost"))
+            cost = Decimal(session.get_attribute("data-session-cost"))
 
         except TypeError:
             logging.warning(f"Could not parse cost for session: {session}")
@@ -60,11 +63,13 @@ def get_court_availability(
                     date,
                 )
 
-                session = ClubsparkAvailableCourt(
+                session = models.CourtSession(
+                    venue=court.venue,
+                    label=court.label,
                     cost=cost,
                     start_time=start_dt,
                     end_time=end_dt,
-                    court=court,
+                    url=url,
                 )
 
                 logging.info(f"Found available court: {session}")
@@ -76,8 +81,8 @@ def get_court_availability(
 def get_all_available_sessions(
     venues: list[str],
     date_range: list[datetime.date],
-) -> list[ClubsparkAvailableCourt]:
-    available_courts: list[ClubsparkAvailableCourt] = []
+) -> list[models.CourtSession]:
+    available_courts: list[models.CourtSession] = []
 
     with get_webdriver() as driver:
         for date, venue in itertools.product(date_range, venues):
@@ -88,7 +93,7 @@ def get_all_available_sessions(
 
             courts = driver.find_elements(By.CSS_SELECTOR, "div.resource")
             for court_element in courts:
-                court = Court(
+                court = schemas.Court(
                     label=court_element.get_attribute("data-resource-name"),
                     venue=venue,
                     resource_id=court_element.get_attribute(
@@ -99,7 +104,12 @@ def get_all_available_sessions(
                 if court.ignore:
                     continue
 
-                sessions = get_court_availability(court_element, court, date)
+                sessions = get_court_availability(
+                    court_element,
+                    court,
+                    date,
+                    venue_date_url,
+                )
 
                 available_courts.extend(sessions)
 

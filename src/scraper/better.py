@@ -7,7 +7,7 @@ from typing import Iterable
 
 import lxml.html as lxhtml
 import lxml.html.clean as clean
-from schemas import BetterAvailableCourt, Court
+import models
 from settings import settings
 
 from scraper.common import get_webdriver
@@ -85,33 +85,36 @@ def create_court_session(
     cost: float,
     venue: str,
     date: datetime.date,
+    url: str,
     **kwargs,
-) -> BetterAvailableCourt:
+) -> models.CourtSession:
     start_hour, end_hour = start_end_time
     start_time = datetime.datetime.combine(
         date, datetime.time(hour=start_hour)
     )
     end_time = datetime.datetime.combine(date, datetime.time(hour=end_hour))
 
-    return BetterAvailableCourt(
+    return models.CourtSession(
+        venue=venue,
+        label=None,
         cost=cost,
         start_time=start_time,
         end_time=end_time,
-        court=Court(venue=venue),
+        url=url,
     )
 
 
 def get_all_available_sessions(
     venues: list[str],
     date_range: list[datetime.date],
-) -> list[BetterAvailableCourt]:
+) -> list[models.CourtSession]:
     COLUMN_MAPPERS = [
         (0, "start_end_time", parse_start_end_time),
         (4, "cost", parse_cost),
         (5, "availability", parse_availability),
     ]
 
-    available_courts: list[BetterAvailableCourt] = []
+    available_courts: list[models.CourtSession] = []
 
     with get_webdriver() as browser:
         for date, venue in itertools.product(date_range, venues):
@@ -145,7 +148,7 @@ def get_all_available_sessions(
 
                 if court["availability"] > 0:
                     court_session = create_court_session(
-                        date=date, venue=venue, **court
+                        date=date, venue=venue, url=url, **court
                     )
 
                     logging.info(f"Found available court: {court_session}")

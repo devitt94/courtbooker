@@ -7,7 +7,6 @@ import scraper.clubspark
 from celery import Celery
 from database import db_session
 from models import CourtSession, ScrapeTask
-from schemas import AvailableCourt
 from settings import settings
 
 celery = Celery(__name__)
@@ -35,7 +34,7 @@ class SqlAlchemyTask(celery.Task):
         db_session.remove()
 
 
-def get_all_available_sessions() -> list[AvailableCourt]:
+def get_all_available_sessions() -> list[CourtSession]:
     today = datetime.datetime.today().date()
     all_courts = []
 
@@ -65,29 +64,17 @@ def get_all_available_sessions() -> list[AvailableCourt]:
 def scrape_sessions():
     start_time = datetime.datetime.now()
 
-    available_courts = get_all_available_sessions()
-    court_sessions = []
+    courts = get_all_available_sessions()
+    for court in courts:
+        db_session.add(court)
 
-    for available_court in available_courts:
-        court_session = CourtSession(
-            venue=available_court.court.venue,
-            label=available_court.court.label,
-            start_time=available_court.start_time,
-            end_time=available_court.end_time,
-            cost=available_court.cost,
-            url=available_court.get_booking_url(),
-        )
-
-        db_session.add(court_session)
-
-        court_sessions.append(court_session)
     end_time = datetime.datetime.now()
 
     task = ScrapeTask(
         time_started=start_time,
         time_finished=end_time,
         params=settings.model_dump(),
-        court_sessions=court_sessions,
+        court_sessions=courts,
     )
 
     db_session.add(task)
