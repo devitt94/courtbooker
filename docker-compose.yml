@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
 
-  web:
+  api:
     build: .
     ports:
       - 8004:8000
-    command: uvicorn api:app --host 0.0.0.0 --reload
+    command: uvicorn api.app:app --host 0.0.0.0 --reload
     volumes:
       - ./project:/usr/src/app
     env_file:
@@ -16,7 +16,8 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-  
+      - postgres
+
   worker:
     build: .
     command: celery -A worker.celery worker --loglevel=info
@@ -29,7 +30,15 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-      - web
+      - api
+      - postgres
 
   redis:
     image: redis:7
+
+  postgres:
+    image: 'postgres:latest'
+    ports:
+      - 2345:5432
+    env_file:
+      - .env.test

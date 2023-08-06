@@ -1,4 +1,3 @@
-import csv
 import datetime
 import logging
 import os
@@ -6,7 +5,9 @@ import os
 import scraper.better
 import scraper.clubspark
 from celery import Celery
-from models import CourtSession
+from database import db_session
+from models import CourtSession, ScrapeTask
+from schemas import AvailableCourt
 from settings import settings
 
 celery = Celery(__name__)
@@ -24,7 +25,17 @@ SCRAPERS = {
 }
 
 
-def get_all_available_sessions() -> list[CourtSession]:
+class SqlAlchemyTask(celery.Task):
+    """An abstract Celery Task that ensures that the connection the the
+    database is closed on task completion"""
+
+    abstract = True
+
+    def after_return(self, status, retval, task_id, args, kwargs, einfo):
+        db_session.remove()
+
+
+def get_all_available_sessions() -> list[AvailableCourt]:
     today = datetime.datetime.today().date()
     all_courts = []
 
@@ -50,21 +61,34 @@ def get_all_available_sessions() -> list[CourtSession]:
     return all_courts
 
 
-def write_courts_to_file(courts: list[CourtSession]) -> None:
-    output_file = settings.DATA_DIR / "output.csv"
-    output_file.parent.mkdir(exist_ok=True)
-    fieldnames = courts[0].to_dict().keys()
-
-    logging.info(f"Writing {len(courts)} courts to {output_file.absolute()}")
-
-    with output_file.open("w") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        for court in courts:
-            writer.writerow(court.to_dict())
-
-
-@celery.task(name="scrape_sessions")
+@celery.task(name="scrape_sessions", base=SqlAlchemyTask)
 def scrape_sessions():
+    start_time = datetime.datetime.now()
+
     available_courts = get_all_available_sessions()
-    return [court.to_dict() for court in available_courts]
+    court_sessions = []
+
+    for available_court in available_courts:
+        court_session = CourtSession(
+            venue=available_court.court.venue,
+            label=available_court.court.label,
+            start_time=available_court.start_time,
+            end_time=available_court.end_time,
+            cost=available_court.cost,
+            url=available_court.get_booking_url(),
+        )
+
+        db_session.add(court_session)
+
+        court_sessions.append(court_session)
+    end_time = datetime.datetime.now()
+
+    task = ScrapeTask(
+        time_started=start_time,
+        time_finished=end_time,
+        params=settings.model_dump(),
+        court_sessions=court_sessions,
+    )
+
+    db_session.add(task)
+    db_session.commit()

@@ -1,4 +1,4 @@
-.PHONY: install clean lint format 
+.PHONY: install clean lint format lock-dependencies install-dev build test-run run
 
 ## Install for production
 install:
@@ -6,7 +6,7 @@ install:
 	python -m pip install --upgrade pip
 	python -m pip install -e .
 
-## Install for development 
+## Install for development
 install-dev: install
 	python -m pip install -e ".[dev]"
 
@@ -23,7 +23,7 @@ clean:
 
 ## Get project version
 # grep the version from pyproject.toml, squeeze multiple spaces, delete double
-#   and single quotes, get 3rd val. This command tolerates 
+#   and single quotes, get 3rd val. This command tolerates
 #   multiple whitespace sequences around the version number
 VERSION := $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 
@@ -49,6 +49,8 @@ check:
 lock-dependencies:
 	pip-compile --generate-hashes --output-file=requirements.txt pyproject.toml
 	pip-compile --generate-hashes --extra=dev --output-file=requirements-dev.txt pyproject.toml
+
+sync-dependencies: lock-dependencies install-dev
 
 ## Build docker image
 build:
@@ -121,4 +123,3 @@ help:
 		printf "\n"; \
 	}' \
 	| more $(shell test $(shell uname) = Darwin && echo '--no-init --raw-control-chars')
-

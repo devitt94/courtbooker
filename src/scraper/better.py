@@ -7,7 +7,7 @@ from typing import Iterable
 
 import lxml.html as lxhtml
 import lxml.html.clean as clean
-from models import BetterCourtSession, Court
+from schemas import BetterAvailableCourt, Court
 from settings import settings
 
 from scraper.common import get_webdriver
@@ -86,14 +86,14 @@ def create_court_session(
     venue: str,
     date: datetime.date,
     **kwargs,
-) -> BetterCourtSession:
+) -> BetterAvailableCourt:
     start_hour, end_hour = start_end_time
     start_time = datetime.datetime.combine(
         date, datetime.time(hour=start_hour)
     )
     end_time = datetime.datetime.combine(date, datetime.time(hour=end_hour))
 
-    return BetterCourtSession(
+    return BetterAvailableCourt(
         cost=cost,
         start_time=start_time,
         end_time=end_time,
@@ -104,14 +104,14 @@ def create_court_session(
 def get_all_available_sessions(
     venues: list[str],
     date_range: list[datetime.date],
-) -> list[BetterCourtSession]:
+) -> list[BetterAvailableCourt]:
     COLUMN_MAPPERS = [
         (0, "start_end_time", parse_start_end_time),
         (4, "cost", parse_cost),
         (5, "availability", parse_availability),
     ]
 
-    available_courts: list[BetterCourtSession] = []
+    available_courts: list[BetterAvailableCourt] = []
 
     with get_webdriver() as browser:
         for date, venue in itertools.product(date_range, venues):

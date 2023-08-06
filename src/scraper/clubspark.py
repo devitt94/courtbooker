@@ -3,7 +3,7 @@ import itertools
 import logging
 import time
 
-from models import ClubsparkCourtSession, Court
+from schemas import ClubsparkAvailableCourt, Court
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -27,7 +27,7 @@ def get_court_availability(
     court_element: WebElement,
     court: Court,
     date: datetime.date,
-) -> list[ClubsparkCourtSession]:
+) -> list[ClubsparkAvailableCourt]:
     available_sessions = []
 
     sessions = court_element.find_elements(
@@ -60,7 +60,7 @@ def get_court_availability(
                     date,
                 )
 
-                session = ClubsparkCourtSession(
+                session = ClubsparkAvailableCourt(
                     cost=cost,
                     start_time=start_dt,
                     end_time=end_dt,
@@ -76,8 +76,8 @@ def get_court_availability(
 def get_all_available_sessions(
     venues: list[str],
     date_range: list[datetime.date],
-) -> list[ClubsparkCourtSession]:
-    available_courts: list[ClubsparkCourtSession] = []
+) -> list[ClubsparkAvailableCourt]:
+    available_courts: list[ClubsparkAvailableCourt] = []
 
     with get_webdriver() as driver:
         for date, venue in itertools.product(date_range, venues):
