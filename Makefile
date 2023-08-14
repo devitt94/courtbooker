@@ -1,4 +1,7 @@
-.PHONY: install clean lint format lock-dependencies install-dev build test-run run
+.PHONY: install clean lint format lock-dependencies install-dev build test-run run venv
+
+venv:
+	. venv/bin/activate
 
 ## Install for production
 install:
@@ -28,25 +31,25 @@ clean:
 VERSION := $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 
 ## Lint using ruff
-ruff:
+ruff: venv
 	ruff .
 
 ## Format files using black
-format:
+format: venv
 	black .
 	ruff . --fix
 
 ## Run tests
-test:
+test: venv
 	PYTHONPATH=src pytest --cov=src --cov-report xml --log-level=WARNING --disable-pytest-warnings
 
 ## Run checks (ruff + test)
-check:
+check: venv
 	ruff check .
 	black --check .
 
 ## Update dependencies
-lock-dependencies:
+lock-dependencies: venv
 	pip-compile --generate-hashes --output-file=requirements.txt pyproject.toml
 	pip-compile --generate-hashes --extra=dev --output-file=requirements-dev.txt pyproject.toml
 
@@ -59,7 +62,9 @@ build:
 
 ## Test run
 test-run:
-	docker run --entrypoint python --env-file .env.test courtbooker:latest main.py
+	docker-compose start postgres
+	docker build -t courtbooker:test .
+	docker run --entrypoint python --env-file .env.test courtbooker:test main.py
 
 ## Run api
 run:
