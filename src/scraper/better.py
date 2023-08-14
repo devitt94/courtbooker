@@ -83,7 +83,7 @@ def extract_lines_from_page_source(page_source: str) -> list[str]:
 def create_court_session(
     start_end_time: tuple[int, int],
     cost: float,
-    venue: str,
+    venue: models.Venue,
     date: datetime.date,
     url: str,
     **kwargs,
@@ -104,8 +104,8 @@ def create_court_session(
     )
 
 
-def get_all_available_sessions(
-    venues: list[str],
+def get_available_sessions(
+    venues: list[models.Venue],
     date_range: list[datetime.date],
 ) -> list[models.CourtSession]:
     COLUMN_MAPPERS = [
@@ -118,7 +118,7 @@ def get_all_available_sessions(
 
     with get_webdriver() as browser:
         for date, venue in itertools.product(date_range, venues):
-            url = f"{settings.BETTER.BASE_URL}/{venue}/{date:%Y-%m-%d}/by-time"
+            url = f"{settings.BETTER.BASE_URL}/{venue.path}/{date:%Y-%m-%d}/by-time"
 
             logging.debug(f"Getting booking page {url=}")
             browser.get(url)
@@ -128,7 +128,7 @@ def get_all_available_sessions(
             lines = extract_lines_from_page_source(browser.page_source)
             if len(lines) < NUM_COLUMNS:
                 logging.debug(
-                    f"No valid session lines found for {venue=} {date=}"
+                    f"No valid session lines found for {venue.name=} {date=}"
                 )
                 continue
 

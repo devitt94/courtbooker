@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -19,14 +18,3 @@ class Task(BaseModel):
     time_finished: datetime
     params: dict
     court_sessions: list[CourtSession]
-
-
-@dataclass
-class Court:
-    venue: str
-    label: Optional[str] = None
-    resource_id: str = "unknown"
-
-    @property
-    def ignore(self) -> bool:
-        return "mini" in self.label.lower()

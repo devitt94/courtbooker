@@ -2,11 +2,11 @@ import datetime
 import logging
 import os
 
+import models
 import scraper.better
 import scraper.clubspark
 from celery import Celery
 from database import db_session
-from models import CourtSession, ScrapeTask
 from settings import settings
 
 celery = Celery(__name__)
@@ -34,7 +34,31 @@ class SqlAlchemyTask(celery.Task):
         db_session.remove()
 
 
-def get_all_available_sessions() -> list[CourtSession]:
+def _fetch_or_create_venues(
+    data_source: str,
+    venues: list[str],
+) -> list[models.Venue]:
+    """Fetches or creates the venues for a given data source
+
+    Args:
+        data_source (str): The data source to fetch venues for
+        venues (list[str]): The venues to fetch
+
+    Returns:
+        list[models.Venue]: The venues for the given data source
+    """
+    data_source = models.DataSource(data_source)
+    new_venues = [
+        models.Venue(path=venue, data_source=data_source) for venue in venues
+    ]
+
+    db_session.add_all(new_venues)
+    db_session.commit()
+
+    return new_venues
+
+
+def get_all_available_sessions() -> list[models.CourtSession]:
     today = datetime.datetime.today().date()
     all_courts = []
 
@@ -49,9 +73,12 @@ def get_all_available_sessions() -> list[CourtSession]:
         logging.info(
             f"Scraping {data_source} for {date_range[0]} to {date_range[-1]}"
         )
-        courts = _scraper.get_all_available_sessions(
-            data_source_settings.VENUES, date_range
+
+        venues: list[models.Venue] = _fetch_or_create_venues(
+            data_source, data_source_settings.VENUES
         )
+
+        courts = _scraper.get_available_sessions(venues, date_range)
 
         logging.info(f"Found {len(courts)} courts")
 
@@ -70,7 +97,7 @@ def scrape_sessions():
 
     end_time = datetime.datetime.now()
 
-    task = ScrapeTask(
+    task = models.ScrapeTask(
         time_started=start_time,
         time_finished=end_time,
         params=settings.model_dump(),
