@@ -18,3 +18,13 @@ class Task(BaseModel):
     time_finished: datetime
     params: dict
     court_sessions: list[CourtSession]
+
+
+class ScrapeTaskResponse(BaseModel):
+    message: str
+    task_id: str
+
+
+class CourtsResponse(BaseModel):
+    message: str
+    courts: list[CourtSession]

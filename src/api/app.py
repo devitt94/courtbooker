@@ -2,7 +2,6 @@ import models
 import schemas
 from database import Base, engine, get_db_session
 from fastapi import Depends, FastAPI, Request
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from worker import scrape_sessions
 
@@ -13,17 +12,7 @@ app = FastAPI()
 running_task = None
 
 
-class ScrapeTaskResponse(BaseModel):
-    message: str
-    task_id: str
-
-
-class CourtsResponse(BaseModel):
-    message: str
-    courts: list[schemas.CourtSession]
-
-
-@app.get("/scrape", response_model=ScrapeTaskResponse)
+@app.get("/scrape", response_model=schemas.ScrapeTaskResponse)
 def scrape(request: Request, db: Session = Depends(get_db_session)):
     global running_task
 
@@ -38,11 +27,11 @@ def scrape(request: Request, db: Session = Depends(get_db_session)):
     return {"message": "ScrapeTask started", "task_id": running_task.id}
 
 
-@app.get("/courts", response_model=CourtsResponse)
+@app.get("/courts", response_model=schemas.CourtsResponse)
 def courts(request: Request, db: Session = Depends(get_db_session)):
     court_sessions = [
         schemas.CourtSession(
-            venue=court_session.venue,
+            venue=court_session.venue.name,
             label=court_session.label,
             start_time=court_session.start_time,
             end_time=court_session.end_time,
