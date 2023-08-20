@@ -1,7 +1,6 @@
 import logging
 from contextlib import contextmanager
 
-import geckodriver_autoinstaller
 from selenium import webdriver
 
 
@@ -11,7 +10,6 @@ def get_webdriver() -> webdriver.Firefox:
         logging.debug("Initiliasing Firefox webdriver")
         options = webdriver.FirefoxOptions()
         options.headless = True
-        geckodriver_autoinstaller.install()
         driver = webdriver.Firefox(options=options)
         yield driver
     except Exception as e:

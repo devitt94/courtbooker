@@ -22,7 +22,7 @@ class Task(BaseModel):
 
 class ScrapeTaskResponse(BaseModel):
     message: str
-    task_id: str
+    tasks: dict[str, str]
 
 
 class CourtsResponse(BaseModel):

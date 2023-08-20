@@ -87,6 +87,7 @@ class ScrapeTask(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     time_started: Mapped[datetime.datetime] = mapped_column(DateTime)
     time_finished: Mapped[datetime.datetime] = mapped_column(DateTime)
+    data_source: Mapped[DataSource] = mapped_column(Enum(DataSource))
     params: Mapped[dict] = mapped_column(JSON)
     court_sessions: Mapped[list["CourtSession"]] = relationship(
         back_populates="task"
