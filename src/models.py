@@ -61,16 +61,6 @@ class CourtSession(Base):
     task_id: Mapped[int] = mapped_column(ForeignKey("scrape_task.id"))
     task: Mapped["ScrapeTask"] = relationship(back_populates="court_sessions")
 
-    def prettify(self) -> dict[str, str]:
-        return {
-            "Venue": self.venue.name,
-            "Court": self.label,
-            "Date": f"{self.start_time:%A %d %B}",
-            "Time": f"{self.start_time:%H:%M}",
-            "Cost": f"£{self.cost:.2f}",
-            "Booking Link": f'<a href="{self.url}">Link to book</a>',
-        }
-
     def __str__(self) -> str:
         return f"{self.venue.name} {self.label} at {self.start_time:%H:%M} on {self.start_time:%A %d %B} (£{self.cost:.2f})"
 
