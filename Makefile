@@ -1,8 +1,5 @@
 .PHONY: install clean lint format lock-dependencies install-dev build test-run run venv
 
-venv:
-	. venv/bin/activate
-
 ## Install for production
 install:
 	@echo ">> Installing dependencies"
@@ -31,25 +28,25 @@ clean:
 VERSION := $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 
 ## Lint using ruff
-ruff: venv
+ruff:
 	ruff .
 
 ## Format files using black
-format: venv
+format:
 	black .
 	ruff . --fix
 
 ## Run tests
-test: venv
+test:
 	PYTHONPATH=src pytest --cov=src --cov-report xml --log-level=WARNING --disable-pytest-warnings
 
 ## Run checks (ruff + test)
-check: venv
+check:
 	ruff check .
 	black --check .
 
 ## Update dependencies
-lock-dependencies: venv
+lock-dependencies:
 	pip-compile --generate-hashes --output-file=requirements.txt pyproject.toml
 	pip-compile --generate-hashes --extra=dev --output-file=requirements-dev.txt pyproject.toml
 

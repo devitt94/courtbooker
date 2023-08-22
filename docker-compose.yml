@@ -10,7 +10,7 @@ services:
     volumes:
       - ./project:/usr/src/app
     env_file:
-      - .env.test
+      - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -24,7 +24,7 @@ services:
     volumes:
       - ./project:/usr/src/app
     env_file:
-      - .env.test
+      - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -41,6 +41,6 @@ services:
     ports:
       - 2345:5432
     env_file:
-      - .env.test
+      - .env
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
