@@ -11,9 +11,6 @@ services:
       - ./project:/usr/src/app
     env_file:
       - .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
       - postgres
@@ -25,9 +22,6 @@ services:
       - ./project:/usr/src/app
     env_file:
       - .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
       - api
@@ -40,8 +34,7 @@ services:
     image: postgres:latest
     container_name: postgres
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     user: 1000:1000
-    environment:
-      POSTGRES_USER: fake_database_user
-      POSTGRES_PASSWORD: fake_database_password
+    env_file:
+      - .env
