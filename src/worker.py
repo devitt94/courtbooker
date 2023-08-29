@@ -7,7 +7,7 @@ import geckodriver_autoinstaller
 import models
 import scraper.better
 import scraper.clubspark
-from celery import Celery
+from celery import Celery, group
 from celery.schedules import crontab
 from database import DbSession
 from email_sender import prepare_success_email_body, send_email
@@ -132,20 +132,21 @@ def send_emails():
 
 @celery.task(name="daily_update")
 def daily_update():
-    scrape_task_group = celery.group(
+    scrape_task_group = group(
         [
             scrape_sessions.s(data_source.value)
             for data_source in models.DataSource
         ]
     )
 
-    if scrape_task_group.ready() and scrape_task_group.successful():
-        send_emails.delay()
+    promise = scrape_task_group()
+    promise.get()
+    send_emails.delay()
 
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(hour=7, minute=30),
+        crontab(hour="7", minute="30"),
         daily_update.s(),
     )
