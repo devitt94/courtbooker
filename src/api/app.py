@@ -12,24 +12,14 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-running_tasks: dict[str, str] = {}
-
-
 @app.get("/scrape", response_model=schemas.ScrapeTaskResponse)
 def scrape(request: Request):
-    global running_tasks
-
-    if running_tasks:
-        return {
-            "message": "ScrapeTasks already running",
-            "tasks": running_tasks,
-        }
-
+    tasks = {}
     for data_source in models.DataSource:
         task = scrape_sessions.delay(data_source.value)
-        running_tasks[data_source.value] = task.id
+        tasks[data_source.value] = task.id
 
-    return {"message": "Scrape tasks started", "tasks": running_tasks}
+    return {"message": "Scrape tasks started", "tasks": tasks}
 
 
 @app.get("/courts", response_model=schemas.CourtsResponse)
