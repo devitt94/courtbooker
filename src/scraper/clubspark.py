@@ -2,8 +2,9 @@ import datetime
 import itertools
 import logging
 import time
+from decimal import Decimal
 
-from models import ClubsparkCourtSession, Court
+import models
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -25,9 +26,11 @@ def _get_dt_from_mins_and_date(
 
 def get_court_availability(
     court_element: WebElement,
-    court: Court,
+    label: str,
+    venue: models.Venue,
     date: datetime.date,
-) -> list[ClubsparkCourtSession]:
+    url: str,
+) -> list[models.CourtSession]:
     available_sessions = []
 
     sessions = court_element.find_elements(
@@ -36,7 +39,7 @@ def get_court_availability(
 
     for session in sessions:
         try:
-            cost = float(session.get_attribute("data-session-cost"))
+            cost = Decimal(session.get_attribute("data-session-cost"))
 
         except TypeError:
             logging.warning(f"Could not parse cost for session: {session}")
@@ -60,11 +63,13 @@ def get_court_availability(
                     date,
                 )
 
-                session = ClubsparkCourtSession(
+                session = models.CourtSession(
+                    venue=venue,
+                    label=label,
                     cost=cost,
                     start_time=start_dt,
                     end_time=end_dt,
-                    court=court,
+                    url=url,
                 )
 
                 logging.info(f"Found available court: {session}")
@@ -73,33 +78,33 @@ def get_court_availability(
     return available_sessions
 
 
-def get_all_available_sessions(
-    venues: list[str],
+def get_available_sessions(
+    venues: list[models.Venue],
     date_range: list[datetime.date],
-) -> list[ClubsparkCourtSession]:
-    available_courts: list[ClubsparkCourtSession] = []
+) -> list[models.CourtSession]:
+    available_courts: list[models.CourtSession] = []
 
     with get_webdriver() as driver:
         for date, venue in itertools.product(date_range, venues):
-            venue_date_url = f"{settings.CLUBSPARK.BASE_URL}/{venue}/Booking/BookByDate#?date={date:%Y-%m-%d}"
+            venue_date_url = f"{settings.CLUBSPARK.BASE_URL}/{venue.path}/Booking/BookByDate#?date={date:%Y-%m-%d}"
             logging.debug(f"Fetching {venue_date_url}")
             driver.get(venue_date_url)
             time.sleep(PAGE_WAIT_SECONDS)
 
             courts = driver.find_elements(By.CSS_SELECTOR, "div.resource")
             for court_element in courts:
-                court = Court(
-                    label=court_element.get_attribute("data-resource-name"),
-                    venue=venue,
-                    resource_id=court_element.get_attribute(
-                        "data-resource-id"
-                    ),
-                )
+                court_label = court_element.get_attribute("data-resource-name")
 
-                if court.ignore:
+                if "mini" in court_label.lower():
                     continue
 
-                sessions = get_court_availability(court_element, court, date)
+                sessions = get_court_availability(
+                    court_element,
+                    court_label,
+                    venue,
+                    date,
+                    venue_date_url,
+                )
 
                 available_courts.extend(sessions)
 

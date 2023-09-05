@@ -2,8 +2,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import schemas
 from json2html import json2html
-from models import CourtSession
 from settings import settings
 
 SUBJECT = "Hackney Tennis Court Availability"
@@ -13,7 +13,9 @@ TABLE_ATTRIBUTES = (
 )
 
 
-def prepare_success_email_body(sessions: list[CourtSession]) -> MIMEMultipart:
+def prepare_success_email_body(
+    sessions: list[schemas.CourtSession],
+) -> MIMEMultipart:
     peak_sessions = filter(lambda s: s.is_peak_time, sessions)
     non_peak_sessions = filter(lambda s: not s.is_peak_time, sessions)
 

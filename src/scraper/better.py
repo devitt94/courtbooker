@@ -7,7 +7,7 @@ from typing import Iterable
 
 import lxml.html as lxhtml
 import lxml.html.clean as clean
-from models import BetterCourtSession, Court
+import models
 from settings import settings
 
 from scraper.common import get_webdriver
@@ -83,39 +83,42 @@ def extract_lines_from_page_source(page_source: str) -> list[str]:
 def create_court_session(
     start_end_time: tuple[int, int],
     cost: float,
-    venue: str,
+    venue: models.Venue,
     date: datetime.date,
+    url: str,
     **kwargs,
-) -> BetterCourtSession:
+) -> models.CourtSession:
     start_hour, end_hour = start_end_time
     start_time = datetime.datetime.combine(
         date, datetime.time(hour=start_hour)
     )
     end_time = datetime.datetime.combine(date, datetime.time(hour=end_hour))
 
-    return BetterCourtSession(
+    return models.CourtSession(
+        venue=venue,
+        label=None,
         cost=cost,
         start_time=start_time,
         end_time=end_time,
-        court=Court(venue=venue),
+        url=url,
     )
 
 
-def get_all_available_sessions(
-    venues: list[str],
+def get_available_sessions(
+    venues: list[models.Venue],
     date_range: list[datetime.date],
-) -> list[BetterCourtSession]:
+) -> list[models.CourtSession]:
     COLUMN_MAPPERS = [
         (0, "start_end_time", parse_start_end_time),
         (4, "cost", parse_cost),
         (5, "availability", parse_availability),
     ]
 
-    available_courts: list[BetterCourtSession] = []
+    available_courts: list[models.CourtSession] = []
 
     with get_webdriver() as browser:
         for date, venue in itertools.product(date_range, venues):
-            url = f"{settings.BETTER.BASE_URL}/{venue}/{date:%Y-%m-%d}/by-time"
+            url = f"{settings.BETTER.BASE_URL}/{venue.path}/{date:%Y-%m-%d}/by-time"
 
             logging.debug(f"Getting booking page {url=}")
             browser.get(url)
@@ -125,7 +128,7 @@ def get_all_available_sessions(
             lines = extract_lines_from_page_source(browser.page_source)
             if len(lines) < NUM_COLUMNS:
                 logging.debug(
-                    f"No valid session lines found for {venue=} {date=}"
+                    f"No valid session lines found for {venue.name=} {date=}"
                 )
                 continue
 
@@ -145,7 +148,7 @@ def get_all_available_sessions(
 
                 if court["availability"] > 0:
                     court_session = create_court_session(
-                        date=date, venue=venue, **court
+                        date=date, venue=venue, url=url, **court
                     )
 
                     logging.info(f"Found available court: {court_session}")

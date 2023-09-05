@@ -1,99 +1,84 @@
-from abc import abstractmethod
-from dataclasses import dataclass
-from datetime import datetime
+import datetime
+import enum
 from decimal import Decimal
+from typing import Optional
 
-from settings import settings
+from database import Base
+from sqlalchemy import (
+    JSON,
+    DateTime,
+    Enum,
+    ForeignKey,
+    String,
+    UniqueConstraint,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-@dataclass
-class Court:
-    venue: str
-    label: str = "unknown court"
-    resource_id: str = "unknown"
+class DataSource(enum.Enum):
+    BETTER = "better"
+    CLUBSPARK = "clubspark"
+
+
+class Venue(Base):
+    __tablename__ = "venue"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    path: Mapped[str] = mapped_column(String)
+    data_source: Mapped[DataSource] = mapped_column(Enum(DataSource))
+
+    court_sessions: Mapped[list["CourtSession"]] = relationship(
+        back_populates="venue"
+    )
+
+    __table_args__ = (
+        UniqueConstraint("path", "data_source", name="path_source"),
+    )
 
     @property
-    def ignore(self) -> bool:
-        return "mini" in self.label.lower()
+    def name(self) -> str:
+        return (
+            self.path.split("/")[-1].replace("-", " ").title().replace(" ", "")
+        )
+
+    def __str__(self):
+        return f"{self.name} ({self.data_source})"
 
 
-@dataclass
-class CourtSession:
-    cost: Decimal
-    start_time: datetime
-    end_time: datetime
-    court: Court
+class CourtSession(Base):
+    __tablename__ = "court_session"
 
-    def to_dict(self):
-        return {
-            "venue": self.court.venue,
-            "court": self.court.label,
-            "cost": self.cost,
-            "start_time": self.start_time.isoformat(),
-            "end_time": self.end_time.isoformat(),
-            "link": self.get_booking_url(),
-        }
+    id: Mapped[int] = mapped_column(primary_key=True)
+    label: Mapped[Optional[str]] = mapped_column(String)
+    cost: Mapped[Decimal] = mapped_column(String)
+    start_time: Mapped[datetime.datetime] = mapped_column(DateTime)
+    end_time: Mapped[datetime.datetime] = mapped_column(DateTime)
+    url: Mapped[str] = mapped_column(String)
+
+    venue_id: Mapped[int] = mapped_column(ForeignKey("venue.id"))
+    venue: Mapped["Venue"] = relationship(back_populates="court_sessions")
+
+    task_id: Mapped[int] = mapped_column(ForeignKey("scrape_task.id"))
+    task: Mapped["ScrapeTask"] = relationship(back_populates="court_sessions")
+
+    def __str__(self) -> str:
+        return f"{self.venue.name} {self.label} at {self.start_time:%H:%M} on {self.start_time:%A %d %B} (£{self.cost:.2f})"
 
     @property
     def is_peak_time(self) -> bool:
-        if self.is_weekday:
-            return self.start_time.hour >= 18
-        else:
-            return self.start_time.hour >= 9
-
-    @abstractmethod
-    def get_booking_url(self) -> str:
-        pass
-
-    @property
-    def is_weekday(self) -> bool:
-        return self.start_time.weekday() not in (5, 6)
-
-    @property
-    def venue_display_name(self) -> str:
-        return self.court.venue
-
-    def __str__(self):
-        return f"{self.venue_display_name} {self.court.label} at {self.start_time:%H:%M} on {self.start_time:%A %d %B} (£{self.cost:.2f})"
-
-    def prettify(self):
-        return {
-            "Venue": self.venue_display_name,
-            "Court": self.court.label,
-            "Date": f"{self.start_time:%A %d %B}",
-            "Time": f"{self.start_time:%H:%M}",
-            "Cost": f"£{self.cost:.2f}",
-            "Booking Link": f'<a href="{self.get_booking_url()}">Link to book</a>',
-        }
-
-    def __lt__(self, other):
-        if self.start_time < other.start_time:
-            return True
-        elif self.start_time == other.start_time:
-            return self.venue_display_name < other.venue_display_name
-        else:
-            return False
-
-    def __eq__(self, other):
-        return (
-            self.start_time == other.start_time
-            and self.venue_display_name == other.venue_display_name
-            and self.court.label == other.court.label
+        return (self.start_time.hour > 17 and self.start_time.day < 5) or (
+            self.start_time.hour > 9 and self.start_time.day >= 5
         )
 
 
-class ClubsparkCourtSession(CourtSession):
-    def get_booking_url(self) -> str:
-        return f"{settings.CLUBSPARK.BASE_URL}/{self.court.venue}/Booking/BookByDate#?date={self.start_time:%Y-%m-%d}"
+class ScrapeTask(Base):
+    __tablename__ = "scrape_task"
 
-
-class BetterCourtSession(CourtSession):
-    def get_booking_url(self) -> str:
-        return f"{settings.BETTER.BASE_URL}/{self.court.venue}/{self.start_time:%Y-%m-%d}/by-time"
-
-    @property
-    def venue_display_name(self) -> str:
-        return {
-            "hackney-parks/tennis-court-outdoor": "HaggerstonPark",
-            "islington-tennis-centre/rosemary-gardens-tennis": "RosemaryGardens",
-        }.get(self.court.venue, self.court.venue)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    time_started: Mapped[datetime.datetime] = mapped_column(DateTime)
+    time_finished: Mapped[datetime.datetime] = mapped_column(DateTime)
+    data_source: Mapped[DataSource] = mapped_column(Enum(DataSource))
+    params: Mapped[dict] = mapped_column(JSON)
+    court_sessions: Mapped[list["CourtSession"]] = relationship(
+        back_populates="task"
+    )

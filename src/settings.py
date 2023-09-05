@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 from pydantic import BaseModel, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -34,7 +33,10 @@ class Settings(BaseSettings):
     CLUBSPARK: DataSourceSettings
     BETTER: DataSourceSettings
 
-    DATA_DIR: Path = "data"
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_PORT: int
 
     @property
     def data_sources(self) -> list[DataSourceSettings]:
@@ -42,6 +44,10 @@ class Settings(BaseSettings):
             "better": self.BETTER,
             "clubspark": self.CLUBSPARK,
         }
+
+    @property
+    def POSTGRES_CONNECTION_STRING(self) -> str:
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@postgres:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
 settings = Settings()
