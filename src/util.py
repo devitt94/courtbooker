@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 
 import models
@@ -7,26 +6,27 @@ from database import DbSession
 
 
 def get_court_sessions(
+    task_ids: list[str] | None = None,
     venues: list[str] | None = None,
     start_time_after: datetime | None = None,
     start_time_before: datetime | None = None,
 ) -> list[schemas.CourtSession]:
     with DbSession(read_only=True) as db_session:
-        latest_task_ids: set[str] = {
-            task.id
-            for task in (
-                db_session.query(models.ScrapeTask)
-                .distinct(models.ScrapeTask.data_source)
-                .order_by(
-                    models.ScrapeTask.data_source,
-                    models.ScrapeTask.time_started.desc(),
+        if task_ids is None:
+            task_ids: set[str] = {
+                task.id
+                for task in (
+                    db_session.query(models.ScrapeTask)
+                    .distinct(models.ScrapeTask.data_source)
+                    .order_by(
+                        models.ScrapeTask.data_source,
+                        models.ScrapeTask.time_started.desc(),
+                    )
                 )
-            )
-        }
-        logging.info(f"Latest task ids: {latest_task_ids}")
+            }
 
         filters = [
-            models.CourtSession.task_id.in_(latest_task_ids),
+            models.CourtSession.task_id.in_(task_ids),
         ]
 
         if venues:

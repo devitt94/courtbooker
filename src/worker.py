@@ -123,10 +123,12 @@ def scrape_sessions(data_source_name: str):
         db_session.add_all(courts)
         db_session.add(task)
 
+    return task.id
+
 
 @celery.task(name="send_emails")
-def send_emails():
-    email = prepare_success_email_body(get_court_sessions())
+def send_emails(task_ids: list[int], *args, **kwargs):
+    email = prepare_success_email_body(get_court_sessions(task_ids))
     send_email(email)
 
 
@@ -139,9 +141,8 @@ def daily_update():
         ]
     )
 
-    promise = scrape_task_group()
-    promise.get()
-    send_emails.delay()
+    chain = scrape_task_group | send_emails.s()
+    chain()
 
 
 @celery.on_after_configure.connect
