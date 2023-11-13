@@ -1,16 +1,17 @@
 from datetime import datetime
 
 import schemas
-from database import Base, engine
-from fastapi import FastAPI
+from fastapi import APIRouter
 from util import get_court_sessions
 from worker import daily_update
 
-Base.metadata.create_all(bind=engine)
-app = FastAPI()
+router = APIRouter(
+    prefix="/api",
+    tags=["api"],
+)
 
 
-@app.get("/courts", response_model=schemas.CourtsResponse)
+@router.get("/courts", response_model=schemas.CourtsResponse)
 def courts(
     venues: list[str] | None = None,
     start_time_after: datetime | None = None,
@@ -28,7 +29,7 @@ def courts(
     }
 
 
-@app.get("/daily")
+@router.get("/daily")
 def run_daily():
     task = daily_update.delay()
     return {

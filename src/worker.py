@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import os
 from typing import Any
@@ -97,6 +98,9 @@ def scrape_sessions(data_source_name: str):
 
     data_source = models.DataSource(data_source_name)
     data_source_settings = settings.data_sources[data_source.value]
+    logging.info(
+        f"Settings:{json.dumps(data_source_settings.model_dump(), indent=2)}"
+    )
     venues = _fetch_or_create_venues(data_source, data_source_settings.VENUES)
 
     courts = get_all_available_sessions(
@@ -122,8 +126,9 @@ def scrape_sessions(data_source_name: str):
         db_session.add_all(venues)
         db_session.add_all(courts)
         db_session.add(task)
+        task_id = task.id
 
-    return task.id
+    return task_id
 
 
 @celery.task(name="send_emails")

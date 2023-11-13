@@ -1,0 +1,29 @@
+<html>
+<head>
+    <title>Courts</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <h1>Courts Available</h1>
+    <table class="table">
+        <tr>
+            <th>Venue</th>
+            <th>Label</th>
+            <th>Cost</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Booking Link</th>
+        </tr>
+        {% for court in courts %}
+        <tr>
+            <td>{{ court.venue }}</td>
+            <td>{{ court.label }}</td>
+            <td>{{ court.cost }}</td>
+            <td>{{ court.start_time }}</td>
+            <td>{{ court.end_time }}</td>
+            <td><a href="{{ court.url }}">Link</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

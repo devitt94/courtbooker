@@ -85,7 +85,10 @@ def get_available_sessions(
     available_courts: list[models.CourtSession] = []
 
     with get_webdriver() as driver:
+        logging.info(f"{venues=}, {type(venues)=}")
+        logging.info(f"{date_range=}, {type(date_range)=}")
         for date, venue in itertools.product(date_range, venues):
+            logging.info(f"Fetching court availability for {venue} on {date}")
             venue_date_url = f"{settings.CLUBSPARK.BASE_URL}/{venue.path}/Booking/BookByDate#?date={date:%Y-%m-%d}"
             logging.debug(f"Fetching {venue_date_url}")
             driver.get(venue_date_url)
