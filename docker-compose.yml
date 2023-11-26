@@ -7,8 +7,9 @@ services:
     ports:
       - 8004:8000
     command: uvicorn app:fastapi --host 0.0.0.0 --reload
+    working_dir: /code/src
     volumes:
-      - ./project:/usr/src/app
+      - ./src:/code/src
     env_file:
       - .env
     depends_on:
@@ -18,8 +19,9 @@ services:
   worker:
     build: .
     command: celery -A worker.celery worker --loglevel=info -B
+    working_dir: /code/src
     volumes:
-      - ./project:/usr/src/app
+      - ./src:/code/src
     env_file:
       - .env
     depends_on:
