@@ -33,7 +33,7 @@ SCRAPERS = {
 
 def _fetch_or_create_venues(
     data_source: models.DataSource,
-    venues: list[str],
+    venue_names: list[str],
 ) -> list[models.Venue]:
     """Fetches or creates the venues for a given data source
 
@@ -45,29 +45,30 @@ def _fetch_or_create_venues(
         list[models.Venue]: The venues for the given data source
     """
     data_source = models.DataSource(data_source)
+
+    venues = []
+
     with DbSession(read_only=True) as db_session:
-        venues_to_create = []
-        for venue in venues:
-            existing_venues = (
+        for venue_name in venue_names:
+            venue = (
                 db_session.query(models.Venue)
                 .filter(
                     models.Venue.data_source == data_source,
-                    models.Venue.path == venue,
+                    models.Venue.path == venue_name,
                 )
-                .all()
+                .one_or_none()
             )
 
-            if existing_venues:
-                continue
-
-            venues_to_create.append(
-                models.Venue(
-                    path=venue,
+            if venue is None:
+                logging.info(f"Creating new venue {venue}")
+                venue = models.Venue(
+                    path=venue_name,
                     data_source=data_source,
                 )
-            )
 
-    return [*existing_venues, *venues_to_create]
+            venues.append(venue)
+
+    return venues
 
 
 def get_all_available_sessions(
@@ -102,6 +103,13 @@ def scrape_sessions(data_source_name: str):
         f"Settings:{json.dumps(data_source_settings.model_dump(), indent=2)}"
     )
     venues = _fetch_or_create_venues(data_source, data_source_settings.VENUES)
+
+    if len(venues) != len(data_source_settings.VENUES):
+        logging.warning(
+            f"Could not find all venues for {data_source} {venues=}, {data_source_settings.VENUES=}"
+        )
+
+    logging.info(f"Scraping {data_source} for {len(venues)} venues")
 
     courts = get_all_available_sessions(
         data_source,
