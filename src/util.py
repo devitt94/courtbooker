@@ -73,3 +73,14 @@ def get_venues() -> list[str]:
         venue_names = [venue.name for venue in venues]
 
     return venue_names
+
+
+def get_latest_update_time() -> datetime:
+    with DbSession(read_only=True) as db_session:
+        latest_update_time = (
+            db_session.query(models.ScrapeTask.time_finished)
+            .order_by(models.ScrapeTask.time_finished.desc())
+            .first()
+        )[0]
+
+    return latest_update_time

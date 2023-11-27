@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from util import get_court_sessions, get_venues
+from util import get_court_sessions, get_latest_update_time, get_venues
 
 router = APIRouter(
     prefix="/html",
@@ -41,8 +41,14 @@ def get_courts(
     )
 
     all_venues = get_venues()
+    last_update_time = get_latest_update_time()
 
     return templates.TemplateResponse(
         "courts.html",
-        {"request": request, "courts": court_sessions, "venues": all_venues},
+        {
+            "request": request,
+            "courts": court_sessions,
+            "venues": all_venues,
+            "last_update_time": last_update_time.strftime("%d/%m/%y %H:%M"),
+        },
     )
