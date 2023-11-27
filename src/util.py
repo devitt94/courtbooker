@@ -62,3 +62,14 @@ def get_court_sessions(
         ]
 
     return court_sessions
+
+
+def get_venues() -> list[str]:
+    with DbSession(read_only=True) as db_session:
+        venues = (
+            db_session.query(models.Venue).order_by(models.Venue.name).all()
+        )
+
+        venue_names = [venue.name for venue in venues]
+
+    return venue_names
