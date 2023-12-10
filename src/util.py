@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 import models
 import schemas
@@ -75,12 +76,15 @@ def get_venues() -> list[str]:
     return venue_names
 
 
-def get_latest_update_time() -> datetime:
+def get_latest_update_time() -> Optional[datetime]:
     with DbSession(read_only=True) as db_session:
         latest_update_time = (
             db_session.query(models.ScrapeTask.time_finished)
             .order_by(models.ScrapeTask.time_finished.desc())
             .first()
-        )[0]
+        )
+
+        if latest_update_time is not None:
+            latest_update_time = latest_update_time[0]
 
     return latest_update_time

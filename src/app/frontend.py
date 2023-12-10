@@ -43,12 +43,15 @@ def get_courts(
     all_venues = get_venues()
     last_update_time = get_latest_update_time()
 
+    if last_update_time is not None:
+        last_update_time = last_update_time.strftime("%d/%m/%y %H:%M")
+
     return templates.TemplateResponse(
         "courts.html",
         {
             "request": request,
             "courts": court_sessions,
             "venues": all_venues,
-            "last_update_time": last_update_time.strftime("%d/%m/%y %H:%M"),
+            "last_update_time": last_update_time,
         },
     )

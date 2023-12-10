@@ -36,7 +36,7 @@ services:
     image: postgres:latest
     container_name: postgres
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data:z
     user: 1000:1000
     env_file:
       - .env
