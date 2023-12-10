@@ -6,9 +6,10 @@ services:
     build: .
     ports:
       - 8004:8000
-    command: uvicorn api.app:app --host 0.0.0.0 --reload
+    command: uvicorn app:fastapi --host 0.0.0.0 --reload
+    working_dir: /code/src
     volumes:
-      - ./project:/usr/src/app
+      - ./src:/code/src
     env_file:
       - .env
     depends_on:
@@ -18,8 +19,9 @@ services:
   worker:
     build: .
     command: celery -A worker.celery worker --loglevel=info -B
+    working_dir: /code/src
     volumes:
-      - ./project:/usr/src/app
+      - ./src:/code/src
     env_file:
       - .env
     depends_on:
@@ -34,7 +36,7 @@ services:
     image: postgres:latest
     container_name: postgres
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data:z
     user: 1000:1000
     env_file:
       - .env

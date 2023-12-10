@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 import models
 import schemas
@@ -62,3 +63,28 @@ def get_court_sessions(
         ]
 
     return court_sessions
+
+
+def get_venues() -> list[str]:
+    with DbSession(read_only=True) as db_session:
+        venues = (
+            db_session.query(models.Venue).order_by(models.Venue.name).all()
+        )
+
+        venue_names = [venue.name for venue in venues]
+
+    return venue_names
+
+
+def get_latest_update_time() -> Optional[datetime]:
+    with DbSession(read_only=True) as db_session:
+        latest_update_time = (
+            db_session.query(models.ScrapeTask.time_finished)
+            .order_by(models.ScrapeTask.time_finished.desc())
+            .first()
+        )
+
+        if latest_update_time is not None:
+            latest_update_time = latest_update_time[0]
+
+    return latest_update_time

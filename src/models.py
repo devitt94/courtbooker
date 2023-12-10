@@ -30,16 +30,28 @@ class Venue(Base):
     court_sessions: Mapped[list["CourtSession"]] = relationship(
         back_populates="venue"
     )
+    name: Mapped[str] = mapped_column(String)
 
     __table_args__ = (
         UniqueConstraint("path", "data_source", name="path_source"),
     )
 
-    @property
-    def name(self) -> str:
-        return (
-            self.path.split("/")[-1].replace("-", " ").title().replace(" ", "")
-        )
+    __venue_path_to_name_mappings = {
+        "hackney-parks/tennis-court-outdoor": "HaggerstonPark",
+        "britannia-leisure-centre/tennis-court-outdoor": "ShoreditchPark",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.name = self.__venue_path_to_name_mappings[self.path]
+        except KeyError:
+            self.name = (
+                self.path.split("/")[-1]
+                .replace("-", " ")
+                .title()
+                .replace(" ", "")
+            )
 
     def __str__(self):
         return f"{self.name} ({self.data_source})"

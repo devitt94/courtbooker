@@ -117,6 +117,8 @@ def get_available_sessions(
     available_courts: list[models.CourtSession] = []
 
     with get_webdriver() as browser:
+        logging.info(f"{venues=}, {type(venues)=}")
+        logging.info(f"{date_range=}, {type(date_range)=}")
         for date, venue in itertools.product(date_range, venues):
             url = f"{settings.BETTER.BASE_URL}/{venue.path}/{date:%Y-%m-%d}/by-time"
 
