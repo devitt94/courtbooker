@@ -6,8 +6,8 @@ from typing import Any
 
 import geckodriver_autoinstaller
 import models
-import scraper.better
-import scraper.clubspark
+import coutrbooker.scraper.better
+import coutrbooker.scraper.clubspark
 from celery import Celery, group
 from celery.schedules import crontab
 from database import DbSession

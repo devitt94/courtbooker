@@ -38,7 +38,7 @@ format:
 
 ## Run tests
 test:
-	PYTHONPATH=src pytest --cov=src --cov-report xml --log-level=WARNING --disable-pytest-warnings
+	pytest --cov=courtbooker --cov-report xml --log-level=WARNING --disable-pytest-warnings
 
 ## Run checks (ruff + test)
 check:

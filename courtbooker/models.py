@@ -3,7 +3,7 @@ import enum
 from decimal import Decimal
 from typing import Optional
 
-from database import Base
+from courtbooker.database import Base
 from sqlalchemy import (
     JSON,
     DateTime,

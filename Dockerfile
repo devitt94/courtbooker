@@ -12,4 +12,4 @@ RUN apt-get update                             \
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --require-hashes --no-deps -r requirements.txt
 
-COPY src/ .
+COPY courtbooker/ .
