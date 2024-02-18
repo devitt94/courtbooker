@@ -3,10 +3,10 @@ version: '3.8'
 services:
 
   api:
-    build: .
+    image: courtbooker:latest
     ports:
-      - 8004:8000
-    command: uvicorn app:fastapi --host 0.0.0.0 --reload
+      - 80:80
+    command: uvicorn app:fastapi --host 0.0.0.0 --port 80 --reload
     working_dir: /code/src
     volumes:
       - ./src:/code/src
@@ -17,7 +17,7 @@ services:
       - postgres
 
   worker:
-    build: .
+    image: courtbooker:latest
     command: celery -A worker.celery worker --loglevel=info -B
     working_dir: /code/src
     volumes:
