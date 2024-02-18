@@ -236,9 +236,7 @@ coverage[toml]==7.1.0 \
     --hash=sha256:f2cba5c6db29ce991029b5e4ac51eb36774458f0a3b8d3137241b32d1bb91f06 \
     --hash=sha256:f5b4198d85a3755d27e64c52f8c95d6333119e49fd001ae5798dac872c95e0f8 \
     --hash=sha256:ffeeb38ee4a80a30a6877c5c4c359e5498eec095878f1581453202bfacc8fbc2
-    # via
-    #   coverage
-    #   pytest-cov
+    # via pytest-cov
 distlib==0.3.7 \
     --hash=sha256:2e24928bc811348f0feb63014e97aaae3037f2cf48712d51ae61df7fd6075057 \
     --hash=sha256:9dafe54b34a028eafd95039d5e5d4851a13734540f1331060d31c9916e7147a8
@@ -358,9 +356,6 @@ iniconfig==2.0.0 \
 jinja2==3.1.2 \
     --hash=sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852 \
     --hash=sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61
-    # via courtbooker (pyproject.toml)
-json2html==1.3.0 \
-    --hash=sha256:8951a53662ae9cfd812685facdba693fc950ffc1c1fd1a8a2d3cf4c34600689c
     # via courtbooker (pyproject.toml)
 kombu==5.3.1 \
     --hash=sha256:48ee589e8833126fd01ceaa08f8a2041334e9f5894e5763c8486a550454551e9 \
@@ -814,9 +809,7 @@ requests==2.29.0 \
 rfc3986[idna2008]==1.5.0 \
     --hash=sha256:270aaf10d87d0d4e095063c65bf3ddbc6ee3d0b226328ce21e036f946e421835 \
     --hash=sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97
-    # via
-    #   httpx
-    #   rfc3986
+    # via httpx
 ruff==0.0.247 \
     --hash=sha256:0151face9ef0e09c0d09166eae5f6df9d61ed7b1686086092d56164b790d1adf \
     --hash=sha256:0abffda0039dc0eec18d624a48a725c414587c816194d1c9889eceba82e87ad0 \
