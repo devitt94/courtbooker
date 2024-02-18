@@ -1,7 +1,6 @@
+from app import api, frontend
 from database import Base, engine
 from fastapi import FastAPI
-
-from app import api, frontend
 
 Base.metadata.create_all(bind=engine)
 fastapi = FastAPI()

@@ -12,7 +12,6 @@ from celery import Celery, group
 from celery.schedules import crontab
 from database import DbSession
 from settings import settings
-from util import get_court_sessions
 
 geckodriver_autoinstaller.install()
 celery = Celery(__name__)

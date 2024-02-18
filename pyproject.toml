@@ -39,12 +39,12 @@ dev = [
 env_files = [".env.example"]
 
 [tool.ruff]
-ignore = ["E501"]
-select = ["E", "F", "I", "W"]
+lint.ignore = ["E501"]
+lint.select = ["E", "F", "I", "W"]
 line-length = 79
-fixable = ["I"]
+lint.fixable = ["I"]
 exclude = [".env", ".venv", "venv", "notebooks"]
-show-source = true
+output-format = "concise"
 
 [tool.coverage.paths]
 source = ["scraper"]
