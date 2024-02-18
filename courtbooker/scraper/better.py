@@ -7,6 +7,7 @@ from typing import Iterable
 
 import lxml.html as lxhtml
 import lxml.html.clean as clean
+
 from courtbooker import models
 from courtbooker.scraper.common import get_webdriver
 from courtbooker.settings import settings

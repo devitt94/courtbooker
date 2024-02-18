@@ -1,4 +1,5 @@
 import pytest
+
 from courtbooker.scraper.better import (
     parse_availability,
     parse_cost,

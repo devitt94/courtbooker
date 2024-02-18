@@ -6,12 +6,13 @@ from typing import Any
 
 import geckodriver_autoinstaller
 import models
-import coutrbooker.scraper.better
-import coutrbooker.scraper.clubspark
 from celery import Celery, group
 from celery.schedules import crontab
 from database import DbSession
 from settings import settings
+
+from courtbooker.scraper import better as better_scraper
+from courtbooker.scraper import clubspark as clubspark_scraper
 
 geckodriver_autoinstaller.install()
 celery = Celery(__name__)
@@ -24,8 +25,8 @@ celery.conf.result_backend = os.environ.get(
 
 
 SCRAPERS = {
-    models.DataSource.BETTER: scraper.better,
-    models.DataSource.CLUBSPARK: scraper.clubspark,
+    models.DataSource.BETTER: better_scraper,
+    models.DataSource.CLUBSPARK: clubspark_scraper,
 }
 
 
