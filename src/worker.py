@@ -11,7 +11,6 @@ import scraper.clubspark
 from celery import Celery, group
 from celery.schedules import crontab
 from database import DbSession
-from email_sender import prepare_success_email_body, send_email
 from settings import settings
 from util import get_court_sessions
 
@@ -139,12 +138,6 @@ def scrape_sessions(data_source_name: str):
     return task_id
 
 
-@celery.task(name="send_emails")
-def send_emails(task_ids: list[int], *args, **kwargs):
-    email = prepare_success_email_body(get_court_sessions(task_ids))
-    send_email(email)
-
-
 @celery.task(name="daily_update")
 def daily_update():
     scrape_task_group = group(
@@ -154,8 +147,7 @@ def daily_update():
         ]
     )
 
-    chain = scrape_task_group | send_emails.s()
-    chain()
+    scrape_task_group()
 
 
 @celery.on_after_configure.connect
