@@ -147,7 +147,7 @@ def daily_update():
         ]
     )
 
-    scrape_task_group()
+    scrape_task_group.apply_async()
 
 
 @celery.on_after_configure.connect
