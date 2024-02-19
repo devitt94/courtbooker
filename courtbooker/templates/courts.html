@@ -22,13 +22,33 @@
                             timePicker: true,
                             timePicker24Hour: true,
                             startDate: moment().startOf('hour'),
-                            endDate: moment().startOf('hour').add(32, 'hour'),
+                            endDate: moment().startOf('hour').add(2, 'day'),
                             ranges: {
                                 'Next 24 Hours': [moment(), moment().add(24, 'hour')],
                                 'Next 48 Hours': [moment(), moment().add(48, 'hour')],
                                 'This weekend': [
                                     moment().startOf('week').add(5, 'day').add(17, 'hour'),
                                     moment().startOf('week').add(7, 'day'),
+                                ],
+                                'Monday Evening': [
+                                    moment().add(1, 'day').startOf('day').add(17, 'hour'),
+                                    moment().add(1, 'day').startOf('day').add(23, 'hour'),
+                                ],
+                                'Tuesday Evening': [
+                                    moment().add(2, 'day').startOf('day').add(17, 'hour'),
+                                    moment().add(2, 'day').startOf('day').add(23, 'hour'),
+                                ],
+                                'Wednesday Evening': [
+                                    moment().add(3, 'day').startOf('day').add(17, 'hour'),
+                                    moment().add(3, 'day').startOf('day').add(23, 'hour'),
+                                ],
+                                'Thursday Evening': [
+                                    moment().add(4, 'day').startOf('day').add(17, 'hour'),
+                                    moment().add(4, 'day').startOf('day').add(23, 'hour'),
+                                ],
+                                'Friday Evening': [
+                                    moment().add(5, 'day').startOf('day').add(17, 'hour'),
+                                    moment().add(5, 'day').startOf('day').add(23, 'hour'),
                                 ],
                             },
                             locale: {
@@ -53,6 +73,33 @@
 
     <div>
         <p>Last updated at: {{ last_update_time }}</p>
+        <button type="button" class="btn btn-primary" id="refreshCourtData">Refresh</button>
+        <script>
+            $(document).ready(function(){
+                $("#refreshCourtData").click(function(){
+                    console.log('Refreshing court data');
+                    console.log('Hostname:', window.location.hostname);
+                    const apiUrl = '/api/refresh-courts';
+                    fetch(apiUrl, {
+                        method: 'GET',
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Network response was not ok: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Handle the response data as needed
+                        console.log('Response:', data);
+                    })
+                    .catch(error => {
+                        // Handle errors during the fetch
+                        console.error('Fetch error:', error);
+                    });
+                });
+            });
+        </script>
     </div>
 
     <h1>Courts Available</h1>

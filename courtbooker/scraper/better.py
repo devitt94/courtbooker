@@ -10,7 +10,7 @@ import lxml.html.clean as clean
 
 from courtbooker import models
 from courtbooker.scraper.common import get_webdriver
-from courtbooker.settings import settings
+from courtbooker.settings import app_settings
 
 BEFORE_AVAILABILITY_TABLE_STRING = "browse by location"
 AFTER_AVAILABILITY_TABLE_STRING = "shopping basket"
@@ -120,7 +120,7 @@ def get_available_sessions(
         logging.info(f"{venues=}, {type(venues)=}")
         logging.info(f"{date_range=}, {type(date_range)=}")
         for date, venue in itertools.product(date_range, venues):
-            url = f"{settings.BETTER.BASE_URL}/{venue.path}/{date:%Y-%m-%d}/by-time"
+            url = f"{app_settings.BETTER.BASE_URL}/{venue.path}/{date:%Y-%m-%d}/by-time"
 
             logging.debug(f"Getting booking page {url=}")
             browser.get(url)

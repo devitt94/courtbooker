@@ -12,7 +12,7 @@ from courtbooker import models
 from courtbooker.database import DbSession
 from courtbooker.scraper import better as better_scraper
 from courtbooker.scraper import clubspark as clubspark_scraper
-from courtbooker.settings import settings
+from courtbooker.settings import app_settings
 
 geckodriver_autoinstaller.install()
 celery = Celery(__name__)
@@ -97,7 +97,7 @@ def scrape_sessions(data_source_name: str):
     start_time = datetime.datetime.now()
 
     data_source = models.DataSource(data_source_name)
-    data_source_settings = settings.data_sources[data_source.value]
+    data_source_settings = app_settings.data_sources[data_source.value]
     logging.info(
         f"Settings:{json.dumps(data_source_settings.model_dump(), indent=2)}"
     )
@@ -123,7 +123,7 @@ def scrape_sessions(data_source_name: str):
         time_started=start_time,
         time_finished=end_time,
         data_source=data_source,
-        params=settings.model_dump(),
+        params=app_settings.model_dump(),
         court_sessions=courts,
     )
     for court in courts:
@@ -138,8 +138,8 @@ def scrape_sessions(data_source_name: str):
     return task_id
 
 
-@celery.task(name="daily_update")
-def daily_update():
+@celery.task(name="court_refresh")
+def court_refresh_task():
     scrape_task_group = group(
         [
             scrape_sessions.s(data_source.value)
@@ -153,6 +153,25 @@ def daily_update():
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(hour="7", minute="30"),
-        daily_update.s(),
+        crontab(hour="22", minute="0"),
+        court_refresh_task.s(),
     )
+
+
+def get_running_task_id(task_name: str) -> str | None:
+    """
+    Get the task id of a running task with the given name.
+
+    Args:
+        task_name (str): The name of the task to find
+
+    Returns:
+        str | None: The task id if the task is running, otherwise None
+    """
+    active_tasks = celery.control.inspect().active()
+    for _, running_tasks in active_tasks.items():
+        for task in running_tasks:
+            if task["name"] == task_name:
+                return task["id"]
+
+    return None
