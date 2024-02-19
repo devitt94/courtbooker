@@ -73,6 +73,33 @@
 
     <div>
         <p>Last updated at: {{ last_update_time }}</p>
+        <button type="button" class="btn btn-primary" id="refreshCourtData">Refresh</button>
+        <script>
+            $(document).ready(function(){
+                $("#refreshCourtData").click(function(){
+                    console.log('Refreshing court data');
+                    console.log('Hostname:', window.location.hostname);
+                    const apiUrl = '/api/refresh-courts';
+                    fetch(apiUrl, {
+                        method: 'GET',
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Network response was not ok: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Handle the response data as needed
+                        console.log('Response:', data);
+                    })
+                    .catch(error => {
+                        // Handle errors during the fetch
+                        console.error('Fetch error:', error);
+                    });
+                });
+            });
+        </script>
     </div>
 
     <h1>Courts Available</h1>

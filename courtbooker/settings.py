@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_PORT: int
 
+    REFRESH_COOLDOWN_MINUTES: int = 60
+
     @property
     def data_sources(self) -> list[DataSourceSettings]:
         return {
@@ -42,4 +44,4 @@ class Settings(BaseSettings):
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@postgres:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
-settings = Settings()
+app_settings = Settings()

@@ -10,7 +10,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from courtbooker import models
 from courtbooker.scraper.common import get_webdriver
-from courtbooker.settings import settings
+from courtbooker.settings import app_settings
 
 PAGE_WAIT_SECONDS = 3
 
@@ -89,7 +89,7 @@ def get_available_sessions(
         logging.info(f"{date_range=}, {type(date_range)=}")
         for date, venue in itertools.product(date_range, venues):
             logging.info(f"Fetching court availability for {venue} on {date}")
-            venue_date_url = f"{settings.CLUBSPARK.BASE_URL}/{venue.path}/Booking/BookByDate#?date={date:%Y-%m-%d}"
+            venue_date_url = f"{app_settings.CLUBSPARK.BASE_URL}/{venue.path}/Booking/BookByDate#?date={date:%Y-%m-%d}"
             logging.debug(f"Fetching {venue_date_url}")
             driver.get(venue_date_url)
             time.sleep(PAGE_WAIT_SECONDS)

@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from courtbooker.settings import settings
+from courtbooker.settings import app_settings
 
-engine = create_engine(settings.POSTGRES_CONNECTION_STRING)
+engine = create_engine(app_settings.POSTGRES_CONNECTION_STRING)
 
 Base = declarative_base()
 
