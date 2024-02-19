@@ -7,10 +7,10 @@ from typing import Iterable
 
 import lxml.html as lxhtml
 import lxml.html.clean as clean
-import models
-from settings import settings
 
-from scraper.common import get_webdriver
+from courtbooker import models
+from courtbooker.scraper.common import get_webdriver
+from courtbooker.settings import settings
 
 BEFORE_AVAILABILITY_TABLE_STRING = "browse by location"
 AFTER_AVAILABILITY_TABLE_STRING = "shopping basket"

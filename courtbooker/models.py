@@ -3,7 +3,6 @@ import enum
 from decimal import Decimal
 from typing import Optional
 
-from database import Base
 from sqlalchemy import (
     JSON,
     DateTime,
@@ -13,6 +12,8 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from courtbooker.database import Base
 
 
 class DataSource(enum.Enum):

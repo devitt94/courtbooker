@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import Optional
 
-import models
-import schemas
-from database import DbSession
+from courtbooker import models, schemas
+from courtbooker.database import DbSession
 
 
 def get_court_sessions(

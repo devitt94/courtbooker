@@ -1,7 +1,7 @@
-from database import Base, engine
 from fastapi import FastAPI
 
-from app import api, frontend
+from courtbooker.app import api, frontend
+from courtbooker.database import Base, engine
 
 Base.metadata.create_all(bind=engine)
 fastapi = FastAPI()

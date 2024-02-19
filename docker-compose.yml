@@ -6,10 +6,10 @@ services:
     image: courtbooker:latest
     ports:
       - 80:80
-    command: uvicorn app:fastapi --host 0.0.0.0 --port 80 --reload
-    working_dir: /code/src
+    command: uvicorn courtbooker.app:fastapi --host 0.0.0.0 --port 80 --reload
+    working_dir: /code
     volumes:
-      - ./src:/code/src
+      - ./courtbooker:/code/courtbooker
     env_file:
       - .env
     depends_on:
@@ -18,10 +18,10 @@ services:
 
   worker:
     image: courtbooker:latest
-    command: celery -A worker.celery worker --loglevel=info -B
-    working_dir: /code/src
+    command: celery -A courtbooker.worker.celery worker --loglevel=info -B
+    working_dir: /code
     volumes:
-      - ./src:/code/src
+      - ./courtbooker:/code/courtbooker
     env_file:
       - .env
     depends_on:

@@ -1,5 +1,6 @@
 import pytest
-from scraper.better import (
+
+from courtbooker.scraper.better import (
     parse_availability,
     parse_cost,
     parse_start_end_time,

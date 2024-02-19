@@ -22,14 +22,6 @@ class Settings(BaseSettings):
 
     DEBUG: bool = False
 
-    SENDER_EMAIL: str
-    SENDER_EMAIL_PASSWORD: str
-    RECEIVER_EMAILS: list[str]
-    EMAIL_SUBJECT: str
-
-    SMTP_SERVER: str
-    SMTP_PORT: int
-
     CLUBSPARK: DataSourceSettings
     BETTER: DataSourceSettings
 

@@ -5,15 +5,14 @@ import os
 from typing import Any
 
 import geckodriver_autoinstaller
-import models
-import scraper.better
-import scraper.clubspark
 from celery import Celery, group
 from celery.schedules import crontab
-from database import DbSession
-from email_sender import prepare_success_email_body, send_email
-from settings import settings
-from util import get_court_sessions
+
+from courtbooker import models
+from courtbooker.database import DbSession
+from courtbooker.scraper import better as better_scraper
+from courtbooker.scraper import clubspark as clubspark_scraper
+from courtbooker.settings import settings
 
 geckodriver_autoinstaller.install()
 celery = Celery(__name__)
@@ -26,8 +25,8 @@ celery.conf.result_backend = os.environ.get(
 
 
 SCRAPERS = {
-    models.DataSource.BETTER: scraper.better,
-    models.DataSource.CLUBSPARK: scraper.clubspark,
+    models.DataSource.BETTER: better_scraper,
+    models.DataSource.CLUBSPARK: clubspark_scraper,
 }
 
 
@@ -139,12 +138,6 @@ def scrape_sessions(data_source_name: str):
     return task_id
 
 
-@celery.task(name="send_emails")
-def send_emails(task_ids: list[int], *args, **kwargs):
-    email = prepare_success_email_body(get_court_sessions(task_ids))
-    send_email(email)
-
-
 @celery.task(name="daily_update")
 def daily_update():
     scrape_task_group = group(
@@ -154,8 +147,7 @@ def daily_update():
         ]
     )
 
-    chain = scrape_task_group | send_emails.s()
-    chain()
+    scrape_task_group()
 
 
 @celery.on_after_configure.connect

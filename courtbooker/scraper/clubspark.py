@@ -4,13 +4,13 @@ import logging
 import time
 from decimal import Decimal
 
-import models
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from settings import settings
 
-from scraper.common import get_webdriver
+from courtbooker import models
+from courtbooker.scraper.common import get_webdriver
+from courtbooker.settings import settings
 
 PAGE_WAIT_SECONDS = 3
 
