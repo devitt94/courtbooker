@@ -5,17 +5,24 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from util import get_court_sessions, get_latest_update_time, get_venues
+
+from courtbooker.util import (
+    get_court_sessions,
+    get_latest_update_time,
+    get_venues,
+)
 
 router = APIRouter(
     prefix="/html",
     tags=["html"],
 )
 
-router.mount("/static", StaticFiles(directory="static"), name="static")
+router.mount(
+    "/static", StaticFiles(directory="courtbooker/static"), name="static"
+)
 
 
-templates = Jinja2Templates(directory="./templates")
+templates = Jinja2Templates(directory="./courtbooker/templates")
 
 
 @router.get("/courts", response_class=HTMLResponse)

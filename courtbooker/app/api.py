@@ -1,9 +1,10 @@
 from datetime import datetime
 
-import schemas
 from fastapi import APIRouter
-from util import get_court_sessions
-from worker import daily_update
+
+from courtbooker import schemas
+from courtbooker.util import get_court_sessions
+from courtbooker.worker import daily_update
 
 router = APIRouter(
     prefix="/api",

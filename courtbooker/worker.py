@@ -5,14 +5,14 @@ import os
 from typing import Any
 
 import geckodriver_autoinstaller
-import models
 from celery import Celery, group
 from celery.schedules import crontab
-from database import DbSession
-from settings import settings
 
+from courtbooker import models
+from courtbooker.database import DbSession
 from courtbooker.scraper import better as better_scraper
 from courtbooker.scraper import clubspark as clubspark_scraper
+from courtbooker.settings import settings
 
 geckodriver_autoinstaller.install()
 celery = Celery(__name__)
