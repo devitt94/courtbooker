@@ -25,6 +25,26 @@ router.mount(
 templates = Jinja2Templates(directory="./courtbooker/templates")
 
 
+@router.get("/", response_class=HTMLResponse)
+def read_root(
+    request: Request,
+):
+    all_venues = get_venues()
+    last_update_time = get_latest_update_time()
+
+    if last_update_time is not None:
+        last_update_time = last_update_time.strftime("%d/%m/%y %H:%M")
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "venues": all_venues,
+            "last_update_time": last_update_time,
+        },
+    )
+
+
 @router.get("/courts", response_class=HTMLResponse)
 def get_courts(
     request: Request,
@@ -47,18 +67,10 @@ def get_courts(
         start_time_before=start_time_lte,
     )
 
-    all_venues = get_venues()
-    last_update_time = get_latest_update_time()
-
-    if last_update_time is not None:
-        last_update_time = last_update_time.strftime("%d/%m/%y %H:%M")
-
     return templates.TemplateResponse(
         "courts.html",
         {
             "request": request,
             "courts": court_sessions,
-            "venues": all_venues,
-            "last_update_time": last_update_time,
         },
     )
