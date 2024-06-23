@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from courtbooker.app.refresh import refresh_court_data
 from courtbooker.util import (
     get_court_sessions,
     get_latest_update_time,
@@ -72,5 +73,17 @@ def get_courts(
         {
             "request": request,
             "courts": court_sessions,
+        },
+    )
+
+
+@router.get("/refresh-courts", response_class=HTMLResponse)
+def refresh_data(request: Request):
+    court_task = refresh_court_data()
+    return templates.TemplateResponse(
+        "refresh-data.html",
+        {
+            "request": request,
+            "message": court_task["message"],
         },
     )

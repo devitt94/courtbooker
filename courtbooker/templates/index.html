@@ -12,98 +12,85 @@
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     </head>
     <body>
-    <div id="formContainer">
+        <div class="ml-4" id="contentWrapper">
+            <div id="formContainer">
 
-        <form hx-get="/html/courts" id="searchCourts" hx-target="#courtsData">
-            <div class="form-group ml-4">
-                <label for="date">Date Range</label>
-                <input type="text" name="daterange" />
-                    <script>
-                        $(function() {
-                            $('input[name="daterange"]').daterangepicker({
-                                timePicker: true,
-                                timePicker24Hour: true,
-                                startDate: moment().startOf('hour'),
-                                endDate: moment().startOf('hour').add(2, 'day'),
-                                ranges: {
-                                    'Next 24 Hours': [moment(), moment().add(24, 'hour')],
-                                    'Next 48 Hours': [moment(), moment().add(48, 'hour')],
-                                    'This weekend': [
-                                        moment().startOf('week').add(5, 'day').add(17, 'hour'),
-                                        moment().startOf('week').add(7, 'day'),
-                                    ],
-                                    'Monday Evening': [
-                                        moment().add(1, 'day').startOf('day').add(17, 'hour'),
-                                        moment().add(1, 'day').startOf('day').add(23, 'hour'),
-                                    ],
-                                    'Tuesday Evening': [
-                                        moment().add(2, 'day').startOf('day').add(17, 'hour'),
-                                        moment().add(2, 'day').startOf('day').add(23, 'hour'),
-                                    ],
-                                    'Wednesday Evening': [
-                                        moment().add(3, 'day').startOf('day').add(17, 'hour'),
-                                        moment().add(3, 'day').startOf('day').add(23, 'hour'),
-                                    ],
-                                    'Thursday Evening': [
-                                        moment().add(4, 'day').startOf('day').add(17, 'hour'),
-                                        moment().add(4, 'day').startOf('day').add(23, 'hour'),
-                                    ],
-                                    'Friday Evening': [
-                                        moment().add(5, 'day').startOf('day').add(17, 'hour'),
-                                        moment().add(5, 'day').startOf('day').add(23, 'hour'),
-                                    ],
-                                },
-                                locale: {
-                                    format: 'DD/M/YY HH:mm'
-                                }
-                            });
-                        });
-                    </script>
-            </div>
-            <div class="form-check form-group ml-4">
-                <h6>Venues</h6>
-                {% for venue in venues %}
+                <form hx-get="/html/courts" id="searchCourts" hx-target="#courtsData">
+                    <div class="form-group ml-4">
+                        <label for="date">Date Range</label>
+                        <input type="text" name="daterange" />
+                            <script>
+                                $(function() {
+                                    $('input[name="daterange"]').daterangepicker({
+                                        timePicker: true,
+                                        timePicker24Hour: true,
+                                        startDate: moment().startOf('hour'),
+                                        endDate: moment().startOf('hour').add(2, 'day'),
+                                        ranges: {
+                                            'Next 24 Hours': [moment(), moment().add(24, 'hour')],
+                                            'Next 48 Hours': [moment(), moment().add(48, 'hour')],
+                                            'This weekend': [
+                                                moment().startOf('week').add(5, 'day').add(17, 'hour'),
+                                                moment().startOf('week').add(7, 'day'),
+                                            ],
+                                            'Monday Evening': [
+                                                moment().add(1, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(1, 'day').startOf('day').add(23, 'hour'),
+                                            ],
+                                            'Tuesday Evening': [
+                                                moment().add(2, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(2, 'day').startOf('day').add(23, 'hour'),
+                                            ],
+                                            'Wednesday Evening': [
+                                                moment().add(3, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(3, 'day').startOf('day').add(23, 'hour'),
+                                            ],
+                                            'Thursday Evening': [
+                                                moment().add(4, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(4, 'day').startOf('day').add(23, 'hour'),
+                                            ],
+                                            'Friday Evening': [
+                                                moment().add(5, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(5, 'day').startOf('day').add(23, 'hour'),
+                                            ],
+                                        },
+                                        locale: {
+                                            format: 'DD/M/YY HH:mm'
+                                        }
+                                    });
+                                });
+                            </script>
+                    </div>
+                    <div class="form-check form-group ml-4">
+                        <h6>Venues</h6>
+                        {% for venue in venues %}
+                        <div>
+                            <input class="form-check-input" type="checkbox" name="venues" id="{{ venue }}" value="{{ venue }}">
+                            <label class="form-check-label" for="{{ venue }}">{{ venue }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Find Courts</button>
+                </form>
+
                 <div>
-                    <input class="form-check-input" type="checkbox" name="venues" id="{{ venue }}" value="{{ venue }}">
-                    <label class="form-check-label" for="{{ venue }}">{{ venue }}</label>
+                    <p>Last updated at: {{ last_update_time }}</p>
+                    <button
+                        type="button"
+                        hx-get="/html/refresh-courts"
+                        class="btn btn-primary"
+                        hx-target="#refreshTaskInfo"
+                        id="refreshCourtData"
+                        hx-confirm="Refreshing court data will take a few minutes."
+                    >
+                        Refresh
+                    </button>
                 </div>
-                {% endfor %}
             </div>
-            <button type="submit" class="btn btn-primary">Find Courts</button>
-        </form>
-
-        <div>
-            <p>Last updated at: {{ last_update_time }}</p>
-            <button type="button" class="btn btn-primary" id="refreshCourtData">Refresh</button>
-            <script>
-                $(document).ready(function(){
-                    $("#refreshCourtData").click(function(){
-                        console.log('Refreshing court data');
-                        console.log('Hostname:', window.location.hostname);
-                        const apiUrl = '/api/refresh-courts';
-                        fetch(apiUrl, {
-                            method: 'GET',
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Network response was not ok: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // Handle the response data as needed
-                            console.log('Response:', data);
-                        })
-                        .catch(error => {
-                            // Handle errors during the fetch
-                            console.error('Fetch error:', error);
-                        });
-                    });
-                });
-            </script>
+            <div id="refreshTaskInfo">
+            </div>
+            <div id="courtsData">
+            </div>
         </div>
-    </div>
-    <div id="courtsData">
-</div>
 </body>
 </html>
