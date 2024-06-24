@@ -6,11 +6,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class DataSourceSettings(BaseModel):
     BASE_URL: str
-    VENUES: list[str]
-    LOOK_AHEAD_DAYS: int
+    VENUES: list[str] = []
+    LOOK_AHEAD_DAYS: int = 7
 
     @validator("VENUES", pre=True)
     def validate(cls, val):
+        if isinstance(val, list):
+            return val
         return json.loads(val)
 
     def __hash__(self) -> int:
