@@ -12,6 +12,7 @@ from courtbooker import models
 from courtbooker.database import DbSession
 from courtbooker.scraper import better as better_scraper
 from courtbooker.scraper import clubspark as clubspark_scraper
+from courtbooker.scraper import tower_hamlets as tower_hamlets_scraper
 from courtbooker.settings import app_settings
 
 geckodriver_autoinstaller.install()
@@ -27,6 +28,7 @@ celery.conf.result_backend = os.environ.get(
 SCRAPERS = {
     models.DataSource.BETTER: better_scraper,
     models.DataSource.CLUBSPARK: clubspark_scraper,
+    models.DataSource.TOWERHAMLETS: tower_hamlets_scraper,
 }
 
 
@@ -101,6 +103,11 @@ def scrape_sessions(data_source_name: str):
     logging.info(
         f"Settings:{json.dumps(data_source_settings.model_dump(), indent=2)}"
     )
+
+    if data_source_settings.LOOK_AHEAD_DAYS <= 0:
+        logging.info(f"Skipping {data_source_name}")
+        return
+
     venues = _fetch_or_create_venues(data_source, data_source_settings.VENUES)
 
     if len(venues) != len(data_source_settings.VENUES):
