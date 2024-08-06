@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     CLUBSPARK: DataSourceSettings
     BETTER: DataSourceSettings
+    TOWERHAMLETS: DataSourceSettings
 
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
@@ -39,6 +40,7 @@ class Settings(BaseSettings):
         return {
             "better": self.BETTER,
             "clubspark": self.CLUBSPARK,
+            "towerhamlets": self.TOWERHAMLETS,
         }
 
     @property

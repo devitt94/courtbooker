@@ -19,6 +19,7 @@ from courtbooker.database import Base
 class DataSource(enum.Enum):
     BETTER = "better"
     CLUBSPARK = "clubspark"
+    TOWERHAMLETS = "towerhamlets"
 
 
 class Venue(Base):
