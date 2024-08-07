@@ -27,7 +27,7 @@ dev = [
   "black>=22.10.0",
   "pytest>=7.2.0",
   "pytest-cov>=4.0.0",
-  "ruff>=0.0.219",
+  "ruff>=0.5.6",
   "pytest-dotenv>=0.5.2",
   "watchdog>=2.1.9",
   "httpx>=0.23.2",
@@ -39,12 +39,12 @@ dev = [
 env_files = [".env.example"]
 
 [tool.ruff]
-ignore = ["E501"]
-select = ["E", "F", "I", "W"]
+lint.ignore = ["E501"]
+lint.select = ["E", "F", "I", "W"]
 line-length = 79
-fixable = ["I"]
+lint.fixable = ["I"]
 exclude = [".env", ".venv", "venv", "notebooks"]
-show-source = true
+output-format = "full"
 
 [tool.coverage.paths]
 source = ["scraper"]

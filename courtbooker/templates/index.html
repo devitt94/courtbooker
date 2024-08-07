@@ -34,24 +34,24 @@
                                                 moment().startOf('week').add(7, 'day'),
                                             ],
                                             'Monday Evening': [
-                                                moment().startOf('week').add(1, 'day').startOf('day').add(17, 'hour'),
-                                                moment().startOf('week').add(1, 'day').startOf('day').add(23, 'hour'),
+                                                moment().add(6, 'day').startOf('week').add(1, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(6, 'day').startOf('week').add(1, 'day').startOf('day').add(23, 'hour'),
                                             ],
                                             'Tuesday Evening': [
-                                                moment().startOf('week').add(2, 'day').startOf('day').add(17, 'hour'),
-                                                moment().startOf('week').add(2, 'day').startOf('day').add(23, 'hour'),
+                                                moment().add(5, 'day').startOf('week').add(2, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(5, 'day').startOf('week').add(2, 'day').startOf('day').add(23, 'hour'),
                                             ],
                                             'Wednesday Evening': [
-                                                moment().startOf('week').add(3, 'day').startOf('day').add(17, 'hour'),
-                                                moment().startOf('week').add(3, 'day').startOf('day').add(23, 'hour'),
+                                                moment().add(4, 'day').startOf('week').add(3, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(4, 'day').startOf('week').add(3, 'day').startOf('day').add(23, 'hour'),
                                             ],
                                             'Thursday Evening': [
-                                                moment().startOf('week').add(4, 'day').startOf('day').add(17, 'hour'),
-                                                moment().startOf('week').add(4, 'day').startOf('day').add(23, 'hour'),
+                                                moment().add(3, 'day').startOf('week').add(4, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(3, 'day').startOf('week').add(4, 'day').startOf('day').add(23, 'hour'),
                                             ],
                                             'Friday Evening': [
-                                                moment().startOf('week').add(5, 'day').startOf('day').add(17, 'hour'),
-                                                moment().startOf('week').add(5, 'day').startOf('day').add(23, 'hour'),
+                                                moment().add(2, 'day').startOf('week').add(5, 'day').startOf('day').add(17, 'hour'),
+                                                moment().add(2, 'day').startOf('week').add(5, 'day').startOf('day').add(23, 'hour'),
                                             ],
                                         },
                                         locale: {
@@ -75,6 +75,11 @@
                             <label class="form-check-label" for="{{ venue }}">{{ venue }}</label>
                         </div>
                         {% endfor %}
+                    </div>
+                    <br/>
+                    <div class="form-check form-group ml-4">
+                        <input class="form-check-input" type="checkbox" name="only_multi_sessions" id="only-two-hour-sessions">
+                        <label class="form-check-label" for="only-two-hour-sessions">Only show 2 hour sessions</label>
                     </div>
                     <button type="submit" class="btn btn-primary">Find Courts</button>
                 </form>

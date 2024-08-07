@@ -34,7 +34,7 @@ ruff:
 ## Format files using black
 format:
 	black .
-	ruff . --fix
+	ruff format .
 
 ## Run tests
 test:
