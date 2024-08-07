@@ -109,9 +109,10 @@ def filter_out_single_sessions(
 
     keys_to_remove = set()
     for key in court_sessions_grouped.keys():
-        hour_before, hour_after = key[1] - timedelta(hours=1), key[
-            1
-        ] + timedelta(hours=1)
+        hour_before, hour_after = (
+            key[1] - timedelta(hours=1),
+            key[1] + timedelta(hours=1),
+        )
         key_before, key_after = (key[0], hour_before), (key[0], hour_after)
         if (
             key_before not in court_sessions_grouped
