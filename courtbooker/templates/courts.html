@@ -13,8 +13,8 @@
         <td>{{ court.venue }}</td>
         <td>{{ court.label }}</td>
         <td>{{ court.cost }}</td>
-        <td>{{ court.start_time }}</td>
-        <td>{{ court.end_time }}</td>
+        <td>{{ court.start_time.strftime("%a %m %b %H:%M") }}</td>
+        <td>{{ court.end_time.strftime("%a %m %b %H:%M") }}</td>
         <td><a href="{{ court.url }}" target="_blank">Link</a></td>
     </tr>
     {% endfor %}
