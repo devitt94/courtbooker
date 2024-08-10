@@ -1,4 +1,5 @@
 <h1>Courts Available</h1>
+<p>Courts found: {{ courts|length }}</p>
 <table class="table">
     <tr>
         <th>Venue</th>
@@ -13,8 +14,8 @@
         <td>{{ court.venue }}</td>
         <td>{{ court.label }}</td>
         <td>{{ court.cost }}</td>
-        <td>{{ court.start_time }}</td>
-        <td>{{ court.end_time }}</td>
+        <td>{{ court.start_time.strftime("%a %d %b %H:%M") }}</td>
+        <td>{{ court.end_time.strftime("%a %d %b %H:%M") }}</td>
         <td><a href="{{ court.url }}" target="_blank">Link</a></td>
     </tr>
     {% endfor %}
