@@ -11,6 +11,7 @@ def get_court_sessions(
     start_time_after: datetime | None = None,
     start_time_before: datetime | None = None,
     only_double_headers: bool = False,
+    exclude_working_hours: bool = False,
 ) -> list[schemas.CourtSession]:
     with DbSession(read_only=True) as db_session:
         if task_ids is None:
@@ -62,10 +63,21 @@ def get_court_sessions(
             for court_session in court_sessions
         ]
 
+    if exclude_working_hours:
+        court_sessions = [
+            court_session
+            for court_session in court_sessions
+            if not is_working_hours(court_session.start_time)
+        ]
+
     if only_double_headers:
         court_sessions = filter_out_single_sessions(court_sessions)
 
     return court_sessions
+
+
+def is_working_hours(start_time: datetime) -> bool:
+    return start_time.isoweekday() < 6 and (8 <= start_time.hour < 17)
 
 
 def get_venues() -> list[str]:

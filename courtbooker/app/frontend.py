@@ -52,6 +52,7 @@ def get_courts(
     venues: list[str] = Query(None),
     daterange: str = Query(None),
     only_double_headers: str = Query(None),
+    exclude_working_hours: str = Query(None),
 ):
     logging.info(f"Venues: {venues}")
     logging.info(f"Daterange: {daterange}")
@@ -69,6 +70,7 @@ def get_courts(
         start_time_after=start_time_gte,
         start_time_before=start_time_lte,
         only_double_headers=only_double_headers == "on",
+        exclude_working_hours=exclude_working_hours == "on",
     )
 
     return templates.TemplateResponse(
