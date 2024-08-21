@@ -17,13 +17,13 @@ def courts(
     venues: list[str] | None = None,
     start_time_after: datetime | None = None,
     start_time_before: datetime | None = None,
-    only_multiple_sessions: bool = False,
+    only_double_headers: bool = False,
 ):
     court_sessions = get_court_sessions(
         venues=venues,
         start_time_after=start_time_after,
         start_time_before=start_time_before,
-        only_multiple_sessions=only_multiple_sessions,
+        only_double_headers=only_double_headers,
     )
 
     return {

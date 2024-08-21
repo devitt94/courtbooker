@@ -51,11 +51,11 @@ def get_courts(
     request: Request,
     venues: list[str] = Query(None),
     daterange: str = Query(None),
-    only_multiple_sessions: str = Query(None),
+    only_double_headers: str = Query(None),
 ):
     logging.info(f"Venues: {venues}")
     logging.info(f"Daterange: {daterange}")
-    logging.info(f"Only multiple sessions: {only_multiple_sessions}")
+    logging.info(f"Only multiple sessions: {only_double_headers}")
 
     if daterange is None:
         start_time_gte, start_time_lte = None, None
@@ -68,7 +68,7 @@ def get_courts(
         venues=venues,
         start_time_after=start_time_gte,
         start_time_before=start_time_lte,
-        only_multiple_sessions=only_multiple_sessions == "on",
+        only_double_headers=only_double_headers == "on",
     )
 
     return templates.TemplateResponse(

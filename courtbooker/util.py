@@ -10,7 +10,7 @@ def get_court_sessions(
     venues: list[str] | None = None,
     start_time_after: datetime | None = None,
     start_time_before: datetime | None = None,
-    only_multiple_sessions: bool = False,
+    only_double_headers: bool = False,
 ) -> list[schemas.CourtSession]:
     with DbSession(read_only=True) as db_session:
         if task_ids is None:
@@ -62,7 +62,7 @@ def get_court_sessions(
             for court_session in court_sessions
         ]
 
-    if only_multiple_sessions:
+    if only_double_headers:
         court_sessions = filter_out_single_sessions(court_sessions)
 
     return court_sessions
