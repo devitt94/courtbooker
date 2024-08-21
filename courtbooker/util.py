@@ -97,7 +97,7 @@ def filter_out_single_sessions(
     court_sessions: list[schemas.CourtSession],
 ) -> list[schemas.CourtSession]:
     """
-    Filter out court sessions that don't have another available session immediately before or after at the same venue.
+    Filter out court sessions that don't have another available session immediately after at the same court/venue.
     """
     # Group court sessions by venue and start time
     court_sessions_grouped = {}
@@ -109,15 +109,9 @@ def filter_out_single_sessions(
 
     keys_to_remove = set()
     for key in court_sessions_grouped.keys():
-        hour_before, hour_after = (
-            key[1] - timedelta(hours=1),
-            key[1] + timedelta(hours=1),
-        )
-        key_before, key_after = (key[0], hour_before), (key[0], hour_after)
-        if (
-            key_before not in court_sessions_grouped
-            and key_after not in court_sessions_grouped
-        ):
+        hour_after = key[1] + timedelta(hours=1)
+        key_hour_after = (key[0], hour_after)
+        if key_hour_after not in court_sessions_grouped:
             keys_to_remove.add(key)
 
     for key in keys_to_remove:
