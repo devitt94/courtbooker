@@ -39,7 +39,6 @@ from courtbooker.util import filter_out_single_sessions
             ],
             [
                 {"venue": "venue1", "time": "2022-01-01T00:00:00"},
-                {"venue": "venue1", "time": "2022-01-01T01:00:00"},
             ],
         ),
     ],

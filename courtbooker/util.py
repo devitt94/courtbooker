@@ -10,7 +10,8 @@ def get_court_sessions(
     venues: list[str] | None = None,
     start_time_after: datetime | None = None,
     start_time_before: datetime | None = None,
-    only_multiple_sessions: bool = False,
+    only_double_headers: bool = False,
+    exclude_working_hours: bool = False,
 ) -> list[schemas.CourtSession]:
     with DbSession(read_only=True) as db_session:
         if task_ids is None:
@@ -62,10 +63,21 @@ def get_court_sessions(
             for court_session in court_sessions
         ]
 
-    if only_multiple_sessions:
+    if exclude_working_hours:
+        court_sessions = [
+            court_session
+            for court_session in court_sessions
+            if not is_working_hours(court_session.start_time)
+        ]
+
+    if only_double_headers:
         court_sessions = filter_out_single_sessions(court_sessions)
 
     return court_sessions
+
+
+def is_working_hours(start_time: datetime) -> bool:
+    return start_time.isoweekday() < 6 and (8 <= start_time.hour < 17)
 
 
 def get_venues() -> list[str]:
@@ -97,7 +109,7 @@ def filter_out_single_sessions(
     court_sessions: list[schemas.CourtSession],
 ) -> list[schemas.CourtSession]:
     """
-    Filter out court sessions that don't have another available session immediately before or after at the same venue.
+    Filter out court sessions that don't have another available session immediately after at the same court/venue.
     """
     # Group court sessions by venue and start time
     court_sessions_grouped = {}
@@ -109,15 +121,9 @@ def filter_out_single_sessions(
 
     keys_to_remove = set()
     for key in court_sessions_grouped.keys():
-        hour_before, hour_after = (
-            key[1] - timedelta(hours=1),
-            key[1] + timedelta(hours=1),
-        )
-        key_before, key_after = (key[0], hour_before), (key[0], hour_after)
-        if (
-            key_before not in court_sessions_grouped
-            and key_after not in court_sessions_grouped
-        ):
+        hour_after = key[1] + timedelta(hours=1)
+        key_hour_after = (key[0], hour_after)
+        if key_hour_after not in court_sessions_grouped:
             keys_to_remove.add(key)
 
     for key in keys_to_remove:
