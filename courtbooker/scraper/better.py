@@ -127,6 +127,10 @@ def get_available_sessions(
             time.sleep(PAGE_WAIT_SECONDS)
 
             logging.debug("Extracting page source")
+            if browser.current_url != url:
+                logging.error(f"Failed to load {url=}, {browser.current_url=}")
+                continue
+
             lines = extract_lines_from_page_source(browser.page_source)
             if len(lines) < NUM_COLUMNS:
                 logging.debug(
