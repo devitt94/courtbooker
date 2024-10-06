@@ -41,6 +41,8 @@ class Venue(Base):
     __venue_path_to_name_mappings = {
         "hackney-parks/tennis-court-outdoor": "HaggerstonPark",
         "britannia-leisure-centre/tennis-court-outdoor": "ShoreditchPark",
+        "islington-tennis-centre/tennis-court-outdoor": "IslingtonTennisCentreOutdoor",
+        "islington-tennis-centre/tennis-court-indoor": "IslingtonTennisCentreIndoor",
     }
 
     def __init__(self, *args, **kwargs):
