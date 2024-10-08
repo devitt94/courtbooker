@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_PORT: int
 
+    GOOGLE_MAPS_API_KEY: str
+
     REFRESH_COOLDOWN_MINUTES: int = 60
 
     @property
