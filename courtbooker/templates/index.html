@@ -87,7 +87,7 @@
 
             function addUserLocationCheckbox() {
                 const input = document.getElementById("useCurrentLocation");
-                const HaggerstonPark = document.getElementById("postcodeInput");
+                const postcodeInput = document.getElementById("postcodeInput");
                 input.addEventListener("change", function() {
                     if (input.checked) {
                         if (navigator.geolocation) {
@@ -96,12 +96,10 @@
                                 const longitude = position.coords.longitude;
                                 const accuracy = position.coords.accuracy;
 
-                                console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Accuracy: ${accuracy}`);
-
                                 if (accuracy > 300) {
-                                    alert("Location accuracy is too low. Please try again.");
+                                    alert("Location accuracy is too low. Try enter your postcode instead.");
                                     input.checked = false;
-                                    ostcodeInput.classList.remove("d-none");
+                                    postcodeInput.classList.remove("d-none");
                                     return;
                                 } else {
                                     document.getElementById("latitude").value = latitude;

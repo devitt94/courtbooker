@@ -21,6 +21,10 @@ VENUE_NAME_TO_GOOGLE_MAPS_NAME = {
 }
 
 
+class InvalidLocationError(Exception):
+    pass
+
+
 def get_distance_in_metres_to_venues(
     origin: str | tuple[float, float],
 ) -> dict[str, int]:
@@ -36,10 +40,13 @@ def get_distance_in_metres_to_venues(
 
     distances = matrix["rows"][0]["elements"]
 
-    gmaps_distances_to_destinations = {
-        destination: distance["distance"]["value"]
-        for destination, distance in zip(destinations, distances)
-    }
+    try:
+        gmaps_distances_to_destinations = {
+            destination: distance["distance"]["value"]
+            for destination, distance in zip(destinations, distances)
+        }
+    except KeyError:
+        raise InvalidLocationError(f"Invalid location: {origin}")
 
     venue_distances = {
         venue: gmaps_distances_to_destinations[google_maps_name]
@@ -50,13 +57,10 @@ def get_distance_in_metres_to_venues(
 
 
 def get_venues_by_location(
-    latitude: float,
-    longitude: float,
+    location: tuple[float, float] | str,
     radius_in_metres: float,
 ) -> dict[str, float]:
-    distance_map = get_distance_in_metres_to_venues(
-        (latitude, longitude),
-    )
+    distance_map = get_distance_in_metres_to_venues(location)
 
     venues = {
         venue: distance

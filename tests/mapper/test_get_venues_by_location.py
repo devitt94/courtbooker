@@ -79,8 +79,7 @@ def test_get_venues_by_location(distance_map, radius, expected_venues):
         mock_get_distance_in_metres_to_venues.return_value = distance_map
 
         venues = get_venues_by_location(
-            latitude=51.5074,
-            longitude=0.1278,
+            (51.5074, 0.1278),
             radius_in_metres=radius,
         )
 

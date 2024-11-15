@@ -2,13 +2,13 @@ import logging
 from datetime import datetime
 from enum import Enum
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from courtbooker.app.refresh import refresh_court_data
-from courtbooker.mapper import get_venues_by_location
+from courtbooker.mapper import InvalidLocationError, get_venues_by_location
 from courtbooker.util import (
     get_court_sessions,
     get_latest_update_time,
@@ -54,21 +54,44 @@ def read_root(
     )
 
 
+def _return_error_response(request: Request, error_message: str):
+    return templates.TemplateResponse(
+        "courts.html",
+        {
+            "request": request,
+            "courts": [],
+            "error_message": error_message,
+        },
+    )
+
+
+def _empty_to_none(value_str: str | None = Query(None)) -> float | None:
+    if value_str is None or value_str == "":  # Convert empty string to None
+        return None
+    return float(value_str)
+
+
 @router.get("/courts", response_class=HTMLResponse)
 def get_courts(
     request: Request,
     search_type: SearchType = Query(SearchType.venue),
-    venues: list[str] = Query(None),
     daterange: str = Query(None),
-    latitude: float = Query(None),
-    longitude: float = Query(None),
-    distance_km: float = Query(None),
-    only_double_headers: str = Query(None),
-    exclude_working_hours: str = Query(None),
+    venues: list[str] | None = Query(None),
+    distance_km: float | None = Query(None),
+    only_double_headers: str | None = Query(None),
+    exclude_working_hours: str | None = Query(None),
+    latitude: float | None = Depends(_empty_to_none),
+    longitude: float | None = Depends(_empty_to_none),
+    postcode: str | None = Query(None),
 ):
     logging.info(f"Venues: {venues}")
     logging.info(f"Daterange: {daterange}")
     logging.info(f"Only multiple sessions: {only_double_headers}")
+
+    if latitude == "":
+        latitude = None
+    if longitude == "":
+        longitude = None
 
     if daterange is None:
         start_time_gte, start_time_lte = None, None
@@ -78,29 +101,36 @@ def get_courts(
         start_time_lte = datetime.strptime(end, "%d/%m/%y %H:%M")
 
     if search_type == SearchType.location:
-        if latitude is None or longitude is None or distance_km is None:
-            return templates.TemplateResponse(
-                "courts.html",
-                {
-                    "request": request,
-                    "courts": [],
-                    "error_message": "Latitude, longitude and distance must be provided when using location",
-                },
+        location_valid = (
+            (latitude is not None) and (longitude is not None)
+        ) ^ (postcode is not None)
+        if not location_valid:
+            return _return_error_response(
+                request,
+                "Location is not determinable. Specify exactly one of coordinates or postcode must be provided when using location",
             )
 
-        venues = get_venues_by_location(
-            latitude=latitude,
-            longitude=longitude,
-            radius_in_metres=distance_km * 1000,
-        )
+        elif distance_km is None:
+            _return_error_response(
+                request, "Distance must be provided when using location search"
+            )
+
+        if latitude and longitude:
+            location = (latitude, longitude)
+        else:
+            location = postcode
+
+        try:
+            venues = get_venues_by_location(
+                location=location,
+                radius_in_metres=distance_km * 1000,
+            )
+        except InvalidLocationError as e:
+            return _return_error_response(request, str(e))
+
         if not venues:
-            return templates.TemplateResponse(
-                "courts.html",
-                {
-                    "request": request,
-                    "courts": [],
-                    "error_message": f"No venues found within {distance_km} km of the location: ({latitude}, {longitude})",
-                },
+            return _return_error_response(
+                request, "No venues found within the specified range"
             )
 
         venues = list(venues.keys())
