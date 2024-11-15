@@ -22,7 +22,7 @@ VENUE_NAME_TO_GOOGLE_MAPS_NAME = {
 
 
 def get_distance_in_metres_to_venues(
-    origin: str | tuple[float, float]
+    origin: str | tuple[float, float],
 ) -> dict[str, int]:
     gmaps = googlemaps.Client(key=app_settings.GOOGLE_MAPS_API_KEY)
 
@@ -36,25 +36,32 @@ def get_distance_in_metres_to_venues(
 
     distances = matrix["rows"][0]["elements"]
 
-    return {
+    gmaps_distances_to_destinations = {
         destination: distance["distance"]["value"]
         for destination, distance in zip(destinations, distances)
     }
 
+    venue_distances = {
+        venue: gmaps_distances_to_destinations[google_maps_name]
+        for venue, google_maps_name in VENUE_NAME_TO_GOOGLE_MAPS_NAME.items()
+    }
+
+    return venue_distances
+
 
 def get_venues_by_location(
-    latitiude: float,
+    latitude: float,
     longitude: float,
-    radius: float,
+    radius_in_metres: float,
 ) -> dict[str, float]:
     distance_map = get_distance_in_metres_to_venues(
-        (latitiude, longitude),
+        (latitude, longitude),
     )
 
     venues = {
         venue: distance
         for venue, distance in distance_map.items()
-        if distance <= radius
+        if distance <= radius_in_metres
     }
 
     return venues

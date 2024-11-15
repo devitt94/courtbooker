@@ -44,6 +44,32 @@ from courtbooker.mapper import get_venues_by_location
             99,
             {},
         ),
+        (
+            {
+                "Askegardens": 1112,
+                "BethnalGreenGardens": 3453,
+                "ClissoldPark": 2658,
+                "Finsburypark": 4206,
+                "HackneyDowns": 3158,
+                "HaggerstonPark": 1687,
+                "HighburyTennis": 2538,
+                "IslingtonTennisCentreOutdoor": 3369,
+                "IslingtonTennisCentreIndoor": 3369,
+                "LondonFields": 2602,
+                "Millfieldsparkmiddlesex": 4638,
+                "Springhillparktennis": 5064,
+                "RosemaryGardensTennis": 448,
+                "ShoreditchPark": 418,
+                "VictoriaPark": 4289,
+            },
+            2000,
+            {
+                "Askegardens": 1112,
+                "HaggerstonPark": 1687,
+                "RosemaryGardensTennis": 448,
+                "ShoreditchPark": 418,
+            },
+        ),
     ],
 )
 def test_get_venues_by_location(distance_map, radius, expected_venues):
@@ -53,9 +79,9 @@ def test_get_venues_by_location(distance_map, radius, expected_venues):
         mock_get_distance_in_metres_to_venues.return_value = distance_map
 
         venues = get_venues_by_location(
-            latitiude=51.5074,
+            latitude=51.5074,
             longitude=0.1278,
-            radius=radius,
+            radius_in_metres=radius,
         )
 
         assert venues == expected_venues

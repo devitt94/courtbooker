@@ -12,7 +12,7 @@
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
         <script type="text/javascript">
             function addRadioChangeListeners() {
-                const radioButtons = document.querySelectorAll('input[name="searchType"]');
+                const radioButtons = document.querySelectorAll('input[name="search_type"]');
 
                 // Add event listener to each radio button
                 radioButtons.forEach(radio => {
@@ -87,14 +87,26 @@
 
             function addUserLocationCheckbox() {
                 const input = document.getElementById("useCurrentLocation");
-                const postcodeInput = document.getElementById("postcodeInput");
+                const HaggerstonPark = document.getElementById("postcodeInput");
                 input.addEventListener("change", function() {
                     if (input.checked) {
                         if (navigator.geolocation) {
                             navigator.geolocation.getCurrentPosition((position) => {
                                 const latitude = position.coords.latitude;
                                 const longitude = position.coords.longitude;
-                                console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+                                const accuracy = position.coords.accuracy;
+
+                                console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Accuracy: ${accuracy}`);
+
+                                if (accuracy > 300) {
+                                    alert("Location accuracy is too low. Please try again.");
+                                    input.checked = false;
+                                    ostcodeInput.classList.remove("d-none");
+                                    return;
+                                } else {
+                                    document.getElementById("latitude").value = latitude;
+                                    document.getElementById("longitude").value = longitude;
+                                }
                             });
 
                             postcodeInput.classList.add("d-none");
@@ -104,7 +116,10 @@
                     } else {
                         postcodeInput.classList.remove("d-none");
                     }
-                });
+                },
+                function error(msg) {alert('Please enable your GPS position feature.');},
+                {enableHighAccuracy: true},
+            );
             };
 
 
@@ -130,12 +145,12 @@
                     <div class="form-group">
 
                         <label>
-                            <input type="radio" name="searchType" value="venueSearch" checked> Search by venue
+                            <input type="radio" name="search_type" value="venueSearch" checked> Search by venue
                         </label>
                         <br>
 
                         <label>
-                            <input type="radio" name="searchType" value="locationSearch"> Search by location
+                            <input type="radio" name="search_type" value="locationSearch"> Search by location
                         </label>
                         <br>
 
@@ -159,6 +174,8 @@
                         <div class="col-sm-2">Location</div>
                         <div class="col-sm-10">
                             <div>
+                                <input type="hidden" id="latitude" name="latitude" />
+                                <input type="hidden" id="longitude" name="longitude" />
                                 <input class="form-check-input" type="checkbox" name="use-current-location" id="useCurrentLocation">
                                 <label class="form-check-label" for="use-current-location">Use Current Location</label>
                             </div>
@@ -168,7 +185,7 @@
                             </div>
                             <div>
                                 <label for="distance">Within (km):</label>
-                                <input type="number" id="distance" name="distance" min="1" max="15" step="1" value="1">
+                                <input type="number" id="distance" name="distance_km" min="1" max="15" step="1" value="1">
                             </div>
                         </div>
                     </div>
