@@ -157,6 +157,9 @@ geckodriver-autoinstaller==0.1.0 \
     --hash=sha256:08953404903750a7e0905913d86eab13849c75ed61eb281c45697d9f5b5e2eb2 \
     --hash=sha256:609236aab9c111af10685cab1ab5551ce86b471101b6add34642545bc7e84bdc
     # via courtbooker (pyproject.toml)
+googlemaps==4.10.0 \
+    --hash=sha256:3055fcbb1aa262a9159b589b5e6af762b10e80634ae11c59495bd44867e47d88
+    # via courtbooker (pyproject.toml)
 greenlet==2.0.2 \
     --hash=sha256:03a8f4f3430c3b3ff8d10a2a86028c660355ab637cee9333d63d66b56f09d52a \
     --hash=sha256:0bf60faf0bc2468089bdc5edd10555bab6e85152191df713e2ab1fcc86382b5a \
@@ -584,7 +587,9 @@ redis==4.6.0 \
 requests==2.29.0 \
     --hash=sha256:e8f3c9be120d3333921d213eef078af392fba3933ab7ed2d1cba3b56f2568c3b \
     --hash=sha256:f2e34a75f4749019bb0e3effb66683630e4ffeaf75819fb51bebef1bf5aef059
-    # via courtbooker (pyproject.toml)
+    # via
+    #   courtbooker (pyproject.toml)
+    #   googlemaps
 selenium==4.9.1 \
     --hash=sha256:3444f4376321530c36ce8355b6b357d8cf4a7d588ce5cf772183465930bbed0e \
     --hash=sha256:82aedaa85d55bc861f4c89ff9609e82f6c958e2e1e3da3ffcc36703f21d3ee16
