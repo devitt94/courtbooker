@@ -43,6 +43,8 @@ class Venue(Base):
         "britannia-leisure-centre/tennis-court-outdoor": "ShoreditchPark",
         "islington-tennis-centre/tennis-court-outdoor": "IslingtonTennisCentreOutdoor",
         "islington-tennis-centre/tennis-court-indoor": "IslingtonTennisCentreIndoor",
+        "lee-valley-hockey-and-tennis-centre/tennis-court-indoor": "LeeValleyIndoor",
+        "lee-valley-hockey-and-tennis-centre/tennis-court-outdoor": "LeeValleyOutdoor",
     }
 
     def __init__(self, *args, **kwargs):

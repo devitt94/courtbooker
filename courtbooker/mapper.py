@@ -18,6 +18,8 @@ VENUE_NAME_TO_GOOGLE_MAPS_NAME = {
     "RosemaryGardensTennis": "Rosemary Gardens Tennis Court",
     "ShoreditchPark": "Britannia Leisure Centre",
     "VictoriaPark": "Tower Hamlets Tennis - Victoria Park, East London",
+    "LeeValleyOutdoor": "Lee Valley Hockey and Tennis Centre",
+    "LeeValleyIndoor": "Lee Valley Hockey and Tennis Centre",
 }
 
 

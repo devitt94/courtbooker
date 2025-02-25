@@ -6,7 +6,6 @@ from typing import Any
 
 import geckodriver_autoinstaller
 from celery import Celery, group
-from celery.schedules import crontab
 
 from courtbooker import models
 from courtbooker.database import DbSession
@@ -155,14 +154,6 @@ def court_refresh_task():
     )
 
     scrape_task_group.apply_async()
-
-
-@celery.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(
-        crontab(hour="22", minute="0"),
-        court_refresh_task.s(),
-    )
 
 
 def get_running_task_id(task_name: str) -> str | None:
